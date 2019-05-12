@@ -1,0 +1,4 @@
+{
+    "mongoURI": "mongodb+srv://prince_gupta:qwerty123@cluster0-inx3i.mongodb.net/test?retryWrites=true",
+    "secretOrKey": "mysecretphrase"
+}
