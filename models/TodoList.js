@@ -7,9 +7,9 @@ const TodoListSchema = new Schema({
         type: String,
         required: true
     },
-    creator: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+    description: {
+        type: String,
+        required: true
     },
     todos: [{
         type: Schema.Types.ObjectId,

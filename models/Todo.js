@@ -7,14 +7,22 @@ const Todo = new Schema({
         type: String,
         required: true
     },
-    completed: {
+    isCompleted: {
         type: Boolean,
         default: false
     },
-    responsible: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }]
+    isBeingEdited: {
+        type: Boolean,
+        default: false
+    },
+    index: {
+        type: Number,
+        required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 module.exports = Todo = mongoose.model("Todo", TodoListSchema);
