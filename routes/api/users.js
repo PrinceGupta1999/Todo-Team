@@ -60,11 +60,11 @@ router.post("/register", (req, res) => {
                                 (err, token) => {
                                     res.json({
                                         success: true,
-                                        token: "Bearer " + token
+                                        token: token
                                     });
                                 }
                             );
-                            res.json(user)
+                            // res.json(user)
                         })
                         .catch(err => console.log(err));
                 });
@@ -116,7 +116,7 @@ router.post("/login", (req, res) => {
                     (err, token) => {
                         res.json({
                             success: true,
-                            token: "Bearer " + token
+                            token: token
                         });
                     }
                 );

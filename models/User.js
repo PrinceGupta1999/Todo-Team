@@ -19,23 +19,38 @@ const UserSchema = new Schema({
         default: Date.now
     },
     todoLists: {
-        adminPermissions: [{
+        admin: [{
             type: Schema.Types.ObjectId,
             ref: 'TodoList'
         }],
-        editPermissions: [{
+        edit: [{
             type: Schema.Types.ObjectId,
             ref: 'TodoList'
         }],
-        viewPermissions: [{
+        view: [{
             type: Schema.Types.ObjectId,
             ref: 'TodoList'
         }]
     },
     notifications: [{
-        permission: String,
-        enum: ['EDIT', 'VIEW']
-
+        permission: {
+            type: String,
+            enum: ['EDIT', 'VIEW'],
+            required: true
+        },
+        todoList: {
+            type: Schema.Types.ObjectId,
+            ref: 'TodoList',
+            required: true
+        },
+        todoListName: {
+            type: String,
+            required: true
+        },
+        userName: {
+            type: String,
+            required: true
+        }
     }]
 });
 
