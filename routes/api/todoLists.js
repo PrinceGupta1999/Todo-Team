@@ -10,7 +10,7 @@ const Todo = require('../../models/Todo');
 
 // Nested Routes
 const todos = require("./todos");
-router.use("/:todoListId/todos", todos);
+router.use("/:todoListId/todos", todos.router);
 
 
 // @route GET api/todolists
@@ -33,7 +33,6 @@ router.get('/', auth, (req, res) => {
                         resolve(todoLists)
                     })
                     .catch(err => {
-                        admin = []
                         reject(err)
                     })
             }))
@@ -41,14 +40,13 @@ router.get('/', auth, (req, res) => {
                 TodoList.find(
                     {
                         _id: {
-                            $in: user.todoLists.admin
+                            $in: user.todoLists.edit
                         }
                     }).then(todoLists => {
-                        admin = todoLists
+                        edit = todoLists
                         resolve(todoLists)
                     })
                     .catch(err => {
-                        admin = []
                         reject(err)
                     })
             }))
@@ -56,25 +54,33 @@ router.get('/', auth, (req, res) => {
                 TodoList.find(
                     {
                         _id: {
-                            $in: user.todoLists.admin
+                            $in: user.todoLists.view
                         }
                     }).then(todoLists => {
-                        admin = todoLists
+                        view = todoLists
                         resolve(todoLists)
                     })
                     .catch(err => {
-                        admin = []
                         reject(err)
                     })
             }))
             Promise.all(promises)
                 .then(values => {
                     console.log(values)
-                    res.json({
-                        admin: admin,
-                        edit: edit,
-                        view: view
+                    if (admin)
+                        user.admin = admin.map(({ _id }) => _id);
+                    if (edit)
+                        user.edit = edit.map(({ _id }) => _id);
+                    if (view)
+                        user.view = view.map(({ _id }) => _id);
+                    view.save().then(() => {
+                        res.json({
+                            admin: admin,
+                            edit: edit,
+                            view: view
+                        })
                     })
+
                 })
                 .catch(err => {
                     console.log(err)
@@ -188,7 +194,7 @@ router.post('/', auth, (req, res) => {
                 .catch(err => {
                     // console.log(err)
                     res.status(500).json({
-                        msg: err
+                        err
                     })
                 })
         })
@@ -197,12 +203,48 @@ router.post('/', auth, (req, res) => {
 // @route DELETE api/todolists/:id
 // @descr Delete TodoList
 // @access Private
-// router.delete('/:id', auth, (req, res) => {
-// TodoList.findById(req.params.id)
-//     .then(todoList => todoList.remove()
-//         .then(() => res.json({ success: true }))
-//     )
-//     .catch(() => res.status(404).json({ success: false }))
-// });
+router.delete('/:todoListId', auth, (req, res) => {
+    TodoList.findById(req.params.id)
+        .then(todoList => todoList.remove()
+            .then(() => {
+                Todo.deleteMany(
+                    {
+                        _id: {
+                            $in: todoList.todos
+                        }
+                    })
+                    .then(() => {
+                        success: true
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json({
+                            success: false,
+                            err
+                        })
+                    })
+            })
+        )
+        .catch(err => res.status(404).json({
+            success: false,
+            err
+        }))
+});
 
-module.exports = router;
+// Setting up socket.io event listeners for this module
+const io = function (io, client) {
+    // Calling Todo socket handler
+    todos.io(io, client);
+
+    // Set Up Personal Events
+
+    // When a todoList is deleted
+    client.on('todolist-delete', todoListId => {
+        client.broadcast.emit('todolist-delete', todoListId);
+    })
+}
+
+module.exports = {
+    router,
+    io
+}

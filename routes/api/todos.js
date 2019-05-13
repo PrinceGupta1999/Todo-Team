@@ -103,7 +103,7 @@ router.patch('/:todoId', auth, (req, res) => {
                 .then(() => {
                     TodoList.findById(req.params.todoListId)
                         .then(todoList => {
-                            todoList.todos = todoList.todos.filter(todoId => todoId !== todo._id)
+                            todoList.todos = todoList.todos.filter(todoId => todoId != todo._id)
                             todoList.todos = todoList.todos.splice(req.body.index, 0, todo._id)
                             todoList.save(() => res.json({
                                 todo,
@@ -127,4 +127,55 @@ router.patch('/:todoId', auth, (req, res) => {
         )
 })
 
-module.exports = router;
+// Setting up socket.io event listeners for this module
+const io = function (io, client) {
+    // When a client asks to edit a Todo => inform others
+    client.on('todo-edit-begin', (userName, todoId) => {
+        Todo.findByIdAndUpdate(
+            todoId,
+            {
+                $set: {
+                    isBeingEdited: true
+                }
+            })
+            .then(todo => {
+                client.broadcast.emit('edit-todo-initiate',
+                    {
+                        todo,
+                        userName
+                    })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    })
+    // When a client either executes or cancels an edit request
+    client.on('todo-edit-end', (todoListId, todoId) => {
+        Todo.findByIdAndUpdate(
+            todoId,
+            {
+                $set: {
+                    isBeingEdited: false
+                }
+            })
+            .then(todo => {
+                io.sockets.emit('todolist-update', todoListId);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    })
+    // After a Todo is successfully deleted
+    client.on('todo-delete', todoListId => {
+        io.sockets.emit('todolist-update', todoListId)
+    })
+    // After a Todo is succesfully created
+    client.on('todo-create', todoListId => {
+        io.sockets.emit('todolist-update', todoListId)
+    })
+}
+
+module.exports = {
+    router,
+    io
+}
