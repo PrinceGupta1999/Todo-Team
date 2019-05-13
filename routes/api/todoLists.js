@@ -19,23 +19,81 @@ router.use("/:todoListId/todos", todos);
 router.get('/', auth, (req, res) => {
     User.findById(req.user.id)
         .then(user => {
-            const userTodoLists = [].concat(user.todoLists.admin,
-                user.todoLists.edit, user.todoLists.view);
-            TodoList.find(
-                {
-                    _id: {
-                        $in: userTodoLists
-                    }
-                }).then(todoLists => res.json({
-                    todolists: todoLists
-                }))
+            // console.log(user)
+            var promises = [];
+            var admin, edit, view;
+            promises.push(new Promise((resolve, reject) => {
+                TodoList.find(
+                    {
+                        _id: {
+                            $in: user.todoLists.admin
+                        }
+                    }).then(todoLists => {
+                        admin = todoLists
+                        resolve(todoLists)
+                    })
+                    .catch(err => {
+                        admin = []
+                        reject(err)
+                    })
+            }))
+            promises.push(new Promise((resolve, reject) => {
+                TodoList.find(
+                    {
+                        _id: {
+                            $in: user.todoLists.admin
+                        }
+                    }).then(todoLists => {
+                        admin = todoLists
+                        resolve(todoLists)
+                    })
+                    .catch(err => {
+                        admin = []
+                        reject(err)
+                    })
+            }))
+            promises.push(new Promise((resolve, reject) => {
+                TodoList.find(
+                    {
+                        _id: {
+                            $in: user.todoLists.admin
+                        }
+                    }).then(todoLists => {
+                        admin = todoLists
+                        resolve(todoLists)
+                    })
+                    .catch(err => {
+                        admin = []
+                        reject(err)
+                    })
+            }))
+            Promise.all(promises)
+                .then(values => {
+                    console.log(values)
+                    res.json({
+                        admin: admin,
+                        edit: edit,
+                        view: view
+                    })
+                })
+                .catch(err => {
+                    console.log(err)
+                    res.status(500).json({
+                        err: err,
+                        admin: admin,
+                        edit: edit,
+                        view: view
+                    })
+                })
         })
         .catch(err => {
-            console.log(err);
+            console.log(err)
             res.status(404).json({
-                msg: "Invalid User"
+                msg: "User Does Not Exist",
+                err
             })
         })
+
 });
 
 // @route POST api/todolists

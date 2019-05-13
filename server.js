@@ -5,6 +5,7 @@ const passport = require("passport");
 const config = require('config');
 const users = require("./routes/api/users");
 const todoLists = require("./routes/api/todoLists");
+const notifications = require("./routes/api/notifications");
 
 const app = express();
 
@@ -37,6 +38,7 @@ require("./config/passport")(passport);
 // Routes
 app.use("/api/users", users);
 app.use("/api/todolists", todoLists);
+app.use("/api/notifications", notifications);
 
 const port = process.env.PORT || 5000;
 

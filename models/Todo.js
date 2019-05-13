@@ -15,10 +15,6 @@ const TodoSchema = new Schema({
         type: Boolean,
         default: false
     },
-    index: {
-        type: Number,
-        required: true
-    },
     date: {
         type: Date,
         default: Date.now

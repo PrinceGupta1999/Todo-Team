@@ -19,7 +19,7 @@ router.get('/', auth, (req, res) => {
                         $in: todoList.todos
                     }
                 }).then(todos => res.json({
-                    todos: todos
+                    todos
                 }))
         })
         .catch(err => {
@@ -33,13 +33,12 @@ router.get('/', auth, (req, res) => {
 // @descr Add Todo
 // @access Private
 router.post('/', auth, (req, res) => {
-    if (!req.body.name || !req.body.index)
+    if (!req.body.name)
         return res.status(400).json({
             msg: "Complete all Fields Required"
         })
     const newTodo = new Todo({
         name: req.body.name,
-        index: req.body.index
     })
     newTodo.save()
         .then(todo => {
@@ -59,7 +58,7 @@ router.post('/', auth, (req, res) => {
         })
 })
 
-// @route POST api/todolists/:todoListId/todos/:todoId
+// @route DELETE api/todolists/:todoListId/todos/:todoId
 // @descr Delete Todo
 // @access Private
 router.delete('/:todoId', auth, (req, res) => {
@@ -71,10 +70,8 @@ router.delete('/:todoId', auth, (req, res) => {
                 })
             else {
                 todo.remove().then(() => {
-                    TodoList.update(
-                        {
-                            _id: req.params.todoListId
-                        },
+                    TodoList.findByIdAndUpdate(
+                        req.params.todoListId,
                         {
                             $pull: {
                                 todos: req.params.todoId
@@ -87,6 +84,47 @@ router.delete('/:todoId', auth, (req, res) => {
                 })
             }
         })
+})
+
+// @route PATCH api/todolists/:todoListId/todos/:todoId
+// @descr Delete Todo
+// @access Private
+router.patch('/:todoId', auth, (req, res) => {
+    if (!req.body.index && !req.body.name || !req.body.isCompleted)
+        return res.status.json({
+            msg: "Fill Required Fields"
+        })
+    Todo.findById(req.params.todoId)
+        .then(todo => {
+            todo.name = name
+            todo.isCompleted = req.body.isCompleted
+            todo.isBeingEdited = false
+            todo.save()
+                .then(() => {
+                    TodoList.findById(req.params.todoListId)
+                        .then(todoList => {
+                            todoList.todos = todoList.todos.filter(todoId => todoId !== todo._id)
+                            todoList.todos = todoList.todos.splice(req.body.index, 0, todo._id)
+                            todoList.save(() => res.json({
+                                todo,
+                                order: todoList.todos
+                            }))
+                        })
+                        .catch(err => res.status(404).json(
+                            {
+                                msg: "TodoList not found",
+                                err
+                            })
+                        )
+
+                })
+        })
+        .catch(err => res.status(404).json(
+            {
+                msg: "Todo not found",
+                err
+            })
+        )
 })
 
 module.exports = router;
