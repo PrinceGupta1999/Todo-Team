@@ -58,8 +58,12 @@ router.post("/register", (req, res) => {
                                     expiresIn: 86400 // 1 day in seconds
                                 },
                                 (err, token) => {
+                                    if (err) {
+                                        res.status(500).json({
+                                            ...err
+                                        })
+                                    }
                                     res.json({
-                                        success: true,
                                         token: token
                                     });
                                 }
@@ -93,7 +97,11 @@ router.post("/login", (req, res) => {
     User.findOne({ email }).then(user => {
         // Check if user exists
         if (!user) {
-            return res.status(404).json({ emailnotfound: "Email not found" });
+            return res.status(404).json({
+                errors: {
+                    email: "Email not found"
+                }
+            });
         }
 
         // Check password
@@ -123,7 +131,11 @@ router.post("/login", (req, res) => {
             } else {
                 return res
                     .status(400)
-                    .json({ passwordincorrect: "Password incorrect" });
+                    .json({
+                        errors: {
+                            password: "Password incorrect"
+                        }
+                    });
             }
         });
     });
