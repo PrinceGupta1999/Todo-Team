@@ -1,8 +1,8 @@
 import React from 'react';
-import { connect } from "react-redux";
 import PropTypes from 'prop-types';
+import NotificationsDialog from './NotificationDialog';
 import { logoutUser } from "../../actions/authActions";
-import { clearErrors } from "../../actions/errorActions";
+import { connect } from "react-redux";
 import { withStyles } from '@material-ui/core/styles';
 import {
     AppBar,
@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core';
 import deepOrange from "@material-ui/core/colors/deepOrange"
 import NotificationsIcon from '@material-ui/icons/Notifications';
+
 
 const styles = theme => ({
     root: {
@@ -36,7 +37,7 @@ const styles = theme => ({
 class Navbar extends React.Component {
     state = {
         accountAnchor: null,
-        notificationAnchor: null
+        notificationDialogOpen: false
     }
     getNameInitials = name => {
         var initials = name.match(/\b\w/g) || [];
@@ -47,17 +48,21 @@ class Navbar extends React.Component {
         this.setState({
             [name + 'Anchor']: e.currentTarget
         })
-        console.log(this.state)
     }
     handleClose = name => e => {
         this.setState({
             [name + 'Anchor']: null
         })
     }
+
+    toggleNotificationDialog = () => {
+        this.setState({
+            notificationDialogOpen: !this.state.notificationDialogOpen
+        })
+    }
     render() {
-        const { classes } = this.props;
-        const { notificationAnchor, accountAnchor } = this.state;
-        const { user } = this.props.auth;
+        const { classes, userName } = this.props;
+        const { accountAnchor } = this.state;
         return (
             <div className={classes.root}>
                 <AppBar position="static">
@@ -68,31 +73,24 @@ class Navbar extends React.Component {
                         <IconButton
                             className={classes.button}
                             color="inherit"
-                            onClick={this.handleOpen('notification')}>
+                            onClick={this.toggleNotificationDialog}>
                             <Badge badgeContent={11} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
+                            <NotificationsDialog toggleNotificationDialog={this.toggleNotificationDialog} notificationDialogOpen={this.state.notificationDialogOpen} />
                         </IconButton>
-                        <Menu
-                            anchorEl={notificationAnchor}
-                            open={Boolean(notificationAnchor)}
-                            onClose={this.handleClose('notification')}>
-                            <MenuItem onClick={this.handleClose('notification')}>My account</MenuItem>
-                            <MenuItem onClick={this.handleClose('notification')}>Logout</MenuItem>
-                            <MenuItem onClick={this.handleClose('notification')}>Profile</MenuItem>
-                        </Menu>
                         <Fab
                             className={classes.button}
                             onClick={this.handleOpen('account')}
                             size="small">
-                            <Avatar className={classes.avatar}>{this.getNameInitials(user.name)}</Avatar>
+                            <Avatar className={classes.avatar}>{this.getNameInitials(userName)}</Avatar>
                         </Fab>
                         <Menu
                             anchorEl={accountAnchor}
                             open={Boolean(accountAnchor)}
                             onClose={this.handleClose('account')}>
-                            <MenuItem onClick={this.handleClose('account')}>Hi! {user.name}</MenuItem>
-                            <MenuItem onClick={() => this.props.logoutUser()}>Logout</MenuItem>
+                            <MenuItem onClick={this.handleClose('account')}>Hi! {userName}</MenuItem>
+                            <MenuItem onClick={this.props.logoutUser}>Logout</MenuItem>
                         </Menu>
 
                     </Toolbar>
@@ -103,19 +101,11 @@ class Navbar extends React.Component {
 }
 
 Navbar.propTypes = {
-    classes: PropTypes.object.isRequired,
-    auth: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth,
-    errors: state.errors
+
 })
-export default connect(
-    mapStateToProps,
-    {
-        logoutUser,
-        clearErrors
-    }
-)(withStyles(styles)(Navbar));
+
+export default connect(mapStateToProps, { logoutUser })(withStyles(styles)(Navbar));

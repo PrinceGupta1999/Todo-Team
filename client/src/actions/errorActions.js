@@ -1,17 +1,10 @@
-import { GET_ERRORS, CLEAR_ERRORS } from "./types";
+import { SET_ERRORS } from "./types";
 
 
 // Set Errors
-export const getErrors = error => {
+export const setErrors = error => {
     return {
-        type: GET_ERRORS,
+        type: SET_ERRORS,
         payload: error
-    }
-}
-
-// Clear Errors
-export const clearErrors = error => {
-    return {
-        type: CLEAR_ERRORS,
     }
 }

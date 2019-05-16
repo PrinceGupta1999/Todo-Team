@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
-import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from "react-router-dom";
-import { clearErrors } from "../../actions/errorActions";
+import { setErrors } from "../../actions/errorActions";
+import { withStyles } from '@material-ui/core/styles';
 import {
     Paper,
     Button,
@@ -47,16 +47,16 @@ class Register extends Component {
         if (nextProps.auth.isAuthenticated) {
             this.props.history.push('/dashboard');
         }
-        if (nextProps.errors) {
-            this.setState({
-                errors: nextProps.errors
-            });
-        }
+        this.setState({
+            errors: nextProps.error.errors
+        });
     }
 
     onChange = name => e => {
-        if (this.props.errors)
-            this.props.clearErrors();
+        if (Object.entries(this.state.errors).length !== 0) {
+            this.props.setErrors({});
+        }
+
         this.setState({ [name]: e.target.value });
     };
 
@@ -140,18 +140,21 @@ class Register extends Component {
 
 Register.propTypes = {
     registerUser: PropTypes.func.isRequired,
-    clearErrors: PropTypes.func.isRequired,
+    setErrors: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired,
+    error: PropTypes.object.isRequired,
     isSelected: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    errors: state.errors
+    error: state.error
 });
 
 export default connect(
     mapStateToProps,
-    { registerUser, clearErrors }
+    {
+        registerUser,
+        setErrors
+    }
 )(withStyles(styles)(withRouter(Register)));

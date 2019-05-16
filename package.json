@@ -1,7 +1,7 @@
 {
-    "name": "mern-todo-app",
+    "name": "todo-team",
     "version": "1.0.0",
-    "description": "Mern Auth Example",
+    "description": "Todo Team WebApp",
     "main": "server.js",
     "scripts": {
         "client-install": "npm install --prefix client",

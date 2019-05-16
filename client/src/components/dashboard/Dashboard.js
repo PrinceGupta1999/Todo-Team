@@ -1,36 +1,49 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { logoutUser } from "../../actions/authActions";
-import Navbar from "../layout/Navbar";
+import { getTodoLists } from "../../actions/todoListActions";
+import { getNotifications } from "../../actions/notificationActions";
+import Navbar from "./Navbar";
+import socketIOClient from 'socket.io-client';
 
 class Dashboard extends Component {
-    onLogoutClick = e => {
-        e.preventDefault();
-        this.props.logoutUser();
-    };
+    state = {
+        server: "http://localhost:5000"
+    }
+
+    componentDidMount() {
+        const socket = socketIOClient(this.state.server)
+        this.props.getNotifications();
+        this.props.getTodoLists();
+    }
 
     render() {
         const { user } = this.props.auth;
-
+        const { notifications } = this.props.notification;
+        const { todoLists } = this.props.todoList;
         return (
             <div>
-                <Navbar />
+                <Navbar userName={user.name} notificationLength={notifications.length} />
             </div>
         );
     }
 }
 
 Dashboard.propTypes = {
-    logoutUser: PropTypes.func.isRequired,
-    auth: PropTypes.object.isRequired
+    getTodoLists: PropTypes.func.isRequired,
+    getNotifications: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    notification: PropTypes.object.isRequired,
+    todoList: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    auth: state.auth
+    auth: state.auth,
+    notification: state.notification,
+    todoList: state.todoList
 });
 
 export default connect(
     mapStateToProps,
-    { logoutUser }
+    { getNotifications, getTodoLists }
 )(Dashboard);

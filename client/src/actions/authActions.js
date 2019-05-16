@@ -1,7 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
-import { getErrors } from "./errorActions";
+import { setErrors } from "./errorActions";
 
 import { SET_CURRENT_USER, USER_LOADING } from "./types";
 
@@ -11,7 +11,6 @@ export const registerUser = (userData) => dispatch => {
         .post("/api/users/register", userData)
         .then(res => {
             // Save to localStorage
-            console.log(res)
             // Set token to localStorage
             const { token } = res.data;
             localStorage.setItem("jwtToken", token);
@@ -22,7 +21,10 @@ export const registerUser = (userData) => dispatch => {
             // Set current user
             dispatch(setCurrentUser(decoded));
         })
-        .catch(err => dispatch(getErrors(err.response.data)));
+        .catch(err => {
+            // console.log(err)
+            dispatch(setErrors(err.response.data))
+        });
 };
 
 // Login - get user token
@@ -31,7 +33,6 @@ export const loginUser = userData => dispatch => {
         .post("/api/users/login", userData)
         .then(res => {
             // Save to localStorage
-
             // Set token to localStorage
             const { token } = res.data;
             localStorage.setItem("jwtToken", token);
@@ -42,7 +43,10 @@ export const loginUser = userData => dispatch => {
             // Set current user
             dispatch(setCurrentUser(decoded));
         })
-        .catch(err => dispatch(getErrors(err.response.data)));
+        .catch(err => {
+            // console.log(err.response.data)
+            dispatch(setErrors(err.response.data))
+        })
 };
 
 // Set logged in user

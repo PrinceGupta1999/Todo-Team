@@ -5,6 +5,22 @@ const router = express.Router();
 // Models
 const User = require('../../models/User');
 
+// @route GET api/notifications
+// @descr View all Notifications
+// @access Private
+router.get('/', auth, (req, res) => {
+    User.findById(req.user.id)
+        .then(user => res.json({
+            notifications: user.notifications
+        }))
+        .catch(err => res.status(404).json({
+            ...err,
+            msg: 'Invalid User ID'
+        }))
+
+})
+
+
 // @route DELETE api/notifications/:notificationId
 // @descr Accept or Decline an Invitation for TodoList
 // @access Private

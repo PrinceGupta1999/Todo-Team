@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { loginUser } from "../../actions/authActions";
+import { setErrors } from "../../actions/errorActions";
 import { withStyles } from '@material-ui/core/styles';
-import { clearErrors } from "../../actions/errorActions";
 import {
     Paper,
     Button,
@@ -44,17 +44,16 @@ class Login extends Component {
         if (nextProps.auth.isAuthenticated) {
             this.props.history.push('/dashboard');
         }
-
-        if (nextProps.errors) {
-            this.setState({
-                errors: nextProps.errors
-            });
-        }
+        this.setState({
+            errors: nextProps.error.errors
+        });
     }
 
     onChange = name => e => {
-        if (this.props.errors)
-            this.props.clearErrors();
+        if (Object.entries(this.state.errors).length !== 0) {
+            this.props.setErrors({});
+        }
+
         this.setState({ [name]: e.target.value });
     };
 
@@ -78,6 +77,7 @@ class Login extends Component {
                     <form noValidate onSubmit={this.onSubmit} autoComplete="off">
                         <TextField
                             fullWidth
+                            helperText={errors.email}
                             required={isSelected}
                             error={errors.email !== undefined}
                             label="Email"
@@ -87,6 +87,7 @@ class Login extends Component {
                         />
                         <TextField
                             fullWidth
+                            helperText={errors.password}
                             required={isSelected}
                             type="password"
                             error={errors.password !== undefined}
@@ -113,21 +114,21 @@ class Login extends Component {
 
 Login.propTypes = {
     loginUser: PropTypes.func.isRequired,
-    clearErrors: PropTypes.func.isRequired,
+    setErrors: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
-    errors: PropTypes.object.isRequired,
+    error: PropTypes.object.isRequired,
     isSelected: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
     auth: state.auth,
-    errors: state.errors
+    error: state.error
 });
 
 export default connect(
     mapStateToProps,
     {
         loginUser,
-        clearErrors
+        setErrors
     }
 )(withStyles(styles)(withRouter(Login)));

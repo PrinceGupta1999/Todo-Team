@@ -66,14 +66,13 @@ router.get('/', auth, (req, res) => {
             }))
             Promise.all(promises)
                 .then(values => {
-                    console.log(values)
                     if (admin)
                         user.admin = admin.map(({ _id }) => _id);
                     if (edit)
                         user.edit = edit.map(({ _id }) => _id);
                     if (view)
                         user.view = view.map(({ _id }) => _id);
-                    view.save().then(() => {
+                    user.save().then(() => {
                         res.json({
                             admin: admin,
                             edit: edit,
@@ -86,9 +85,6 @@ router.get('/', auth, (req, res) => {
                     console.log(err)
                     res.status(500).json({
                         err: err,
-                        admin: admin,
-                        edit: edit,
-                        view: view
                     })
                 })
         })
@@ -226,8 +222,8 @@ router.delete('/:todoListId', auth, (req, res) => {
             })
         )
         .catch(err => res.status(404).json({
-            success: false,
-            err
+            ...err,
+            success: false
         }))
 });
 
