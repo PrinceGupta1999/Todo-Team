@@ -82,17 +82,16 @@ router.get('/', auth, (req, res) => {
 
                 })
                 .catch(err => {
-                    console.log(err)
                     res.status(500).json({
-                        err: err,
+                        ...err
                     })
                 })
         })
         .catch(err => {
-            console.log(err)
+            // console.log(err)
             res.status(404).json({
                 msg: "User Does Not Exist",
-                err
+                ...err
             })
         })
 
@@ -116,7 +115,7 @@ router.post('/', auth, (req, res) => {
             var promises = [];
             // Pushing todolist id to its editors 
             if (req.body.edit.length > 0) {
-                console.log(req.body.edit)
+                // console.log(req.body.edit)
                 promises.push(new Promise((resolve, reject) => {
                     const notification = {
                         permission: 'EDIT',
@@ -213,10 +212,10 @@ router.delete('/:todoListId', auth, (req, res) => {
                         success: true
                     })
                     .catch(err => {
-                        console.log(err);
+                        // console.log(err);
                         res.status(500).json({
                             success: false,
-                            err
+                            ...err
                         })
                     })
             })

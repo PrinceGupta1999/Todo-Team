@@ -1,4 +1,4 @@
-import { SET_NOTIFICATIONS, NOTIFICATIONS_LOADING } from '../actions/types';
+import { SET_NOTIFICATIONS, NOTIFICATIONS_LOADING, REMOVE_NOTIFICATION } from '../actions/types';
 
 const initialState = {
     notifications: [],
@@ -16,6 +16,13 @@ export default function (state = initialState, action) {
             return {
                 loading: true,
                 notifications: []
+            };
+        case REMOVE_NOTIFICATION:
+            const notifications = state.notifications.filter(notification => notification._id !== action.payload);
+            console.log(notifications)
+            return {
+                ...state,
+                notifications
             };
         default:
             return state;

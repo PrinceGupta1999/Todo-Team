@@ -1,7 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
-import { SET_NOTIFICATIONS, NOTIFICATIONS_LOADING } from "./types";
+import { SET_NOTIFICATIONS, NOTIFICATIONS_LOADING, REMOVE_NOTIFICATION } from "./types";
 
 // Get Notifications
 export const getNotifications = () => dispatch => {
@@ -11,7 +11,6 @@ export const getNotifications = () => dispatch => {
     axios
         .get("/api/notifications")
         .then(res => {
-            console.log(res.data)
             // res.data = Contains Collection of TodoLists
             dispatch(setNotifications(res.data.notifications))
         })
@@ -27,6 +26,19 @@ export const setNotificationsLoading = () => {
     return {
         type: NOTIFICATIONS_LOADING
     }
+}
+
+export const handleNotification = (notificationId, accept) => dispatch => {
+    axios
+        .delete('/api/notifications/' + notificationId, accept)
+        .then(res => {
+            dispatch({
+                type: REMOVE_NOTIFICATION,
+                payload: notificationId
+            })
+        })
+        .catch(err => dispatch(setErrors(err)))
+
 }
 
 export const setNotifications = (notifications) => {

@@ -55,10 +55,16 @@ class Navbar extends React.Component {
         })
     }
 
-    toggleNotificationDialog = () => {
+    openNotificationDialog = e => {
         this.setState({
-            notificationDialogOpen: !this.state.notificationDialogOpen
+            notificationDialogOpen: true
         })
+    }
+    closeNotificationDialog = () => {
+        this.setState({
+            notificationDialogOpen: false
+        })
+
     }
     render() {
         const { classes, userName } = this.props;
@@ -73,11 +79,11 @@ class Navbar extends React.Component {
                         <IconButton
                             className={classes.button}
                             color="inherit"
-                            onClick={this.toggleNotificationDialog}>
-                            <Badge badgeContent={11} color="secondary">
+                            onClick={this.openNotificationDialog
+                            }>
+                            <Badge badgeContent={this.props.notificationCount} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
-                            <NotificationsDialog toggleNotificationDialog={this.toggleNotificationDialog} notificationDialogOpen={this.state.notificationDialogOpen} />
                         </IconButton>
                         <Fab
                             className={classes.button}
@@ -92,7 +98,7 @@ class Navbar extends React.Component {
                             <MenuItem onClick={this.handleClose('account')}>Hi! {userName}</MenuItem>
                             <MenuItem onClick={this.props.logoutUser}>Logout</MenuItem>
                         </Menu>
-
+                        <NotificationsDialog closeNotificationDialog={this.closeNotificationDialog} notificationDialogOpen={this.state.notificationDialogOpen} />
                     </Toolbar>
                 </AppBar>
             </div>

@@ -23,7 +23,7 @@ class Dashboard extends Component {
         const { todoLists } = this.props.todoList;
         return (
             <div>
-                <Navbar userName={user.name} notificationLength={notifications.length} />
+                <Navbar userName={user.name} notificationCount={notifications.length} />
             </div>
         );
     }
