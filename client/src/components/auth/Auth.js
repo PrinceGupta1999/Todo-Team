@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import Login from './Login';
 import Register from './Register';
 import {
@@ -8,7 +7,8 @@ import {
     Tabs,
     Tab,
     Typography,
-    Grid
+    Grid,
+    withStyles
 } from '@material-ui/core';
 
 

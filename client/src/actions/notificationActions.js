@@ -30,7 +30,11 @@ export const setNotificationsLoading = () => {
 
 export const handleNotification = (notificationId, accept) => dispatch => {
     axios
-        .delete('/api/notifications/' + notificationId, accept)
+        .delete('/api/notifications/' + notificationId, {
+            data: {
+                accept
+            }
+        })
         .then(res => {
             dispatch({
                 type: REMOVE_NOTIFICATION,

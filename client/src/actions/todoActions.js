@@ -1,22 +1,22 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
-import { SET_TODOLISTS, TODOLISTS_LOADING, REMOVE_TODOLIST } from "./types";
+import { SET_TODOS, TODOS_LOADING, REMOVE_TODO } from "./types";
 
-// Get TodoLists
-export const getTodoLists = () => dispatch => {
+// Get Todos
+export const getTodos = (todoListId) => dispatch => {
     const token = localStorage.jwtToken
     dispatch({
-        type: TODOLISTS_LOADING
+        type: TODOS_LOADING
     })
     setAuthToken(token)
     axios
-        .get("/api/todolists")
+        .get("/api/todolists/" + todoListId + "/todos")
         .then(res => {
-            // console.log(res.data)
-            // res.data = Contains Collection of TodoLists
+            console.log(res.data)
+            // res.data = Contains Collection of Todos
             dispatch({
-                type: SET_TODOLISTS,
+                type: SET_TODOS,
                 payload: res.data
             })
         })
@@ -26,18 +26,24 @@ export const getTodoLists = () => dispatch => {
         });
 };
 
-// Delete a TodoList
-export const deleteTodoList = (todoListId) => dispatch => {
+// Edit Todos
+export const editTodo = (todoListId) => dispatch => {
+
+};
+
+
+// Delete a Todo
+export const deleteTodo = (todoListId, todoId) => dispatch => {
     const token = localStorage.jwtToken
     setAuthToken(token)
     axios
-        .delete("/api/todolists/" + todoListId)
+        .delete("/api/todolists/" + todoListId + "/todos/" + todoId)
         .then(res => {
             // console.log(res.data)
-            // Remove Todo List from current lists of todolists
+            // Remove Todo  from current s of todos
             dispatch({
-                type: REMOVE_TODOLIST,
-                payload: todoListId
+                type: REMOVE_TODO,
+                payload: todoId
             })
         })
         .catch(err => {

@@ -117,7 +117,8 @@ Login.propTypes = {
     setErrors: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     error: PropTypes.object.isRequired,
-    isSelected: PropTypes.bool.isRequired
+    isSelected: PropTypes.bool.isRequired,
+    classes: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
