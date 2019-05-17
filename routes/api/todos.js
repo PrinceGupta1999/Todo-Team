@@ -18,9 +18,7 @@ router.get('/', auth, (req, res) => {
                     _id: {
                         $in: todoList.todos
                     }
-                }).then(todos => res.json({
-                    todos
-                }))
+                }).then(todos => res.json(todos))
         })
         .catch(err => {
             res.json(404).json({

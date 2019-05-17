@@ -13,7 +13,7 @@ export const getTodos = (todoListId) => dispatch => {
     axios
         .get("/api/todolists/" + todoListId + "/todos")
         .then(res => {
-            console.log(res.data)
+            // console.log(res.data)
             // res.data = Contains Collection of Todos
             dispatch({
                 type: SET_TODOS,
