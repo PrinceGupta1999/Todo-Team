@@ -1,4 +1,4 @@
-import { SET_TODOLISTS, TODOLISTS_LOADING, REMOVE_TODOLIST } from '../actions/types';
+import { SET_TODOLISTS, TODOLISTS_LOADING, REMOVE_TODOLIST, ADD_TODOLIST } from '../actions/types';
 
 const initialState = {
     todoLists: {
@@ -20,6 +20,14 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 loading: true,
+            };
+        case ADD_TODOLIST:
+            return {
+                ...state,
+                todoLists: {
+                    ...state.todoLists,
+                    admin: [...state.todoLists.admin, action.payload]
+                }
             };
         case REMOVE_TODOLIST:
             return {

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { setErrors } from "../../actions/errorActions";
 import ChipInput from 'material-ui-chip-input'
-import { deleteTodoList, createdTodoList } from "../../actions/todoListActions";
+import { deleteTodoList, createTodoList } from "../../actions/todoListActions";
 import {
     Paper,
     List,
@@ -120,7 +120,8 @@ class TodoList extends Component {
     }
 
     onSubmit = e => {
-
+        e.preventDefault()
+        this.props.createTodoList(this.state.createdTodoList)
     }
     render() {
         const { todoLists, isEditor, isAdmin, classes } = this.props;
@@ -238,4 +239,11 @@ const mapStateToProps = state => ({
     todo: state.todo,
     error: state.error
 })
-export default connect(mapStateToProps, { deleteTodoList, setErrors })(withStyles(styles)(TodoList));
+export default connect(
+    mapStateToProps,
+    {
+        deleteTodoList,
+        setErrors,
+        createTodoList
+    }
+)(withStyles(styles)(TodoList));

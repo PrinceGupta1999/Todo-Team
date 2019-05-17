@@ -102,7 +102,6 @@ router.get('/', auth, (req, res) => {
 // @access Private
 router.post('/', auth, (req, res) => {
     // Basic Validation
-    console.log(req.body)
     if (!req.body.name || !req.body.description)
         return res.status(400).json({
             msg: "Complete all Fields"
@@ -200,7 +199,6 @@ router.post('/', auth, (req, res) => {
 // @descr Delete TodoList
 // @access Private
 router.delete('/:todoListId', auth, (req, res) => {
-    console.log(req.params)
     TodoList.findById(req.params.todoListId)
         .then(todoList => todoList.remove()
             .then(() => {
