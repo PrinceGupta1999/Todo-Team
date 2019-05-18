@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getTodos, deleteTodo, editTodo } from '../../actions/todoActions'
+import { getTodos, deleteTodo, editTodo, createTodo } from '../../actions/todoActions'
 import { setErrors } from '../../actions/errorActions'
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -20,7 +20,11 @@ import {
     Slide,
     Divider,
     Grid,
-    Button
+    Button,
+    FormControl,
+    FormGroup,
+    FormControlLabel,
+    Switch
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
@@ -45,6 +49,12 @@ const styles = theme => ({
     root: {
         flexGrow: 1,
     },
+    list: {
+        padding: 0,
+    },
+    complete: {
+        textDecoration: 'line-through'
+    }
 });
 
 function Transition(props) {
@@ -56,7 +66,8 @@ class TodoDialog extends React.Component {
         editedTodo: {
             name: "",
             index: "",
-            id: ""
+            id: "",
+            isComplete: false
         },
         createdTodo: {
             name: "",
@@ -74,11 +85,12 @@ class TodoDialog extends React.Component {
         })
     }
 
-    onChangePanel = todoId => (event, expanded) => {
+    onChangePanel = (id, name, index, isComplete) => (event, expanded) => {
         var newEditedTodo = { ...this.state.editedTodo }
-        newEditedTodo.id = expanded ? todoId : ""
-        newEditedTodo.name = ""
-        newEditedTodo.index = ""
+        newEditedTodo.id = expanded ? id : ""
+        newEditedTodo.name = expanded ? name : ""
+        newEditedTodo.index = expanded ? index : ""
+        newEditedTodo.isComplete = expanded ? isComplete : false
         this.setState({
             editedTodo: newEditedTodo
         })
@@ -93,15 +105,18 @@ class TodoDialog extends React.Component {
     }
     onChangeEdit = name => e => {
         var newEditedTodo = { ...this.state.editedTodo }
-        newEditedTodo[name] = e.target.value
+        if (name === 'isComplete') {
+            newEditedTodo[name] = e.target.checked
+        }
+        else
+            newEditedTodo[name] = e.target.value
         this.setState({
             editedTodo: newEditedTodo
         })
     }
-
-    onSubmitCreate = e => {
+    onSubmitEdit = e => {
         e.preventDefault()
-        this.props.createTodo(this.props.todoList.todoListId, this.state.editedTodo)
+        this.props.editTodo(this.props.todoList.todoListId, this.state.editedTodo)
     }
     onSubmitCreate = e => {
         e.preventDefault()
@@ -112,7 +127,7 @@ class TodoDialog extends React.Component {
         const { classes, todoDialogOpen, isEditor } = this.props;
         const { todos } = this.props.todo;
         const { errors } = this.state;
-        const userId = this.props.auth.id;
+        // const userId = this.props.auth.id;
         const { todoListId, todoListName, todoListDescription } = this.props.todoList
         return (
             <Fragment>
@@ -138,7 +153,7 @@ class TodoDialog extends React.Component {
                             </Typography>
                         </Toolbar>
                     </AppBar>
-                    <List>
+                    <List className={classes.list}>
                         <ListItem key={todoListId}>
                             <ListItemText
                                 primary="Description"
@@ -153,13 +168,14 @@ class TodoDialog extends React.Component {
                                 key={_id}
                                 expanded={this.state.editedTodo.id === _id}
                                 disabled={isBeingEdited || !isEditor}
-                                onChange={this.onChangePanel(_id)}>
+                                onChange={this.onChangePanel(_id, name, index, isComplete)}>
                                 <ExpansionPanelSummary expandIcon={<EditIcon color="primary" />}>
-                                    <Typography className={classes.heading}>{name}</Typography>
-                                    {isEditor && !isBeingEdited ? (
+                                    <Typography className={[classes.heading, (isComplete ? classes.complete : null)]}>{name}</Typography>
+                                    {isEditor ? (
                                         <Grid container justify="flex-end">
                                             <IconButton
                                                 color="secondary"
+                                                disabled={isBeingEdited}
                                                 onClick={() => this.props.deleteTodo(todoListId, _id)}
                                                 size="small"
                                             ><DeleteIcon />
@@ -174,7 +190,7 @@ class TodoDialog extends React.Component {
                                         autoComplete="off"
                                         className={classes.root}>
                                         <Grid container justify="center" spacing={16} className={classes.root}>
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3} sm={4}>
                                                 <TextField
                                                     required
                                                     fullWidth
@@ -186,7 +202,7 @@ class TodoDialog extends React.Component {
                                                     margin="normal"
                                                 />
                                             </Grid>
-                                            <Grid item xs={4}>
+                                            <Grid item xs={3} sm={4}>
                                                 <TextField
                                                     fullWidth
                                                     required
@@ -199,7 +215,24 @@ class TodoDialog extends React.Component {
                                                     margin="normal"
                                                 />
                                             </Grid>
-                                            <Grid item xs={4} sm={3} md={2}>
+                                            <Grid item xs={2}>
+                                                <FormControl
+                                                    margin="normal">
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Switch
+                                                                    checked={this.state.editedTodo.isComplete}
+                                                                    onChange={this.onChangeEdit('isComplete')}
+                                                                    value={this.state.editedTodo.isComplete}
+                                                                />
+                                                            }
+                                                            label={this.state.editedTodo.isComplete ? 'Complete' : 'Incomplete'}
+                                                        />
+                                                    </FormGroup>
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item xs={4} sm={2}>
                                                 <Button
                                                     size="large"
                                                     type="submit"
@@ -263,16 +296,17 @@ class TodoDialog extends React.Component {
 TodoDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     todo: PropTypes.object.isRequired,
-    auth: PropTypes.object.isRequired,
+    // auth: PropTypes.object.isRequired,
     error: PropTypes.object.isRequired,
     editTodo: PropTypes.func.isRequired,
+    createTodo: PropTypes.func.isRequired,
     deleteTodo: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     todo: state.todo,
-    auth: state.auth,
+    // auth: state.auth,
     error: state.error
 })
 
-export default connect(mapStateToProps, { getTodos, editTodo, deleteTodo, setErrors })(withStyles(styles)(TodoDialog));
+export default connect(mapStateToProps, { getTodos, editTodo, deleteTodo, createTodo, setErrors })(withStyles(styles)(TodoDialog));

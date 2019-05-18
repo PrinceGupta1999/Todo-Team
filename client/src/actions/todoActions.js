@@ -25,8 +25,13 @@ export const getTodos = (todoListId) => dispatch => {
         });
 };
 
-// Edit Todos
+// Edit a Todo
 export const editTodo = (todoListId) => dispatch => {
+
+};
+
+// Create a Todo
+export const createTodo = (todoListId) => dispatch => {
 
 };
 
