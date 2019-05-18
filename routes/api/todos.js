@@ -88,24 +88,24 @@ router.delete('/:todoId', auth, (req, res) => {
 // @descr Delete Todo
 // @access Private
 router.patch('/:todoId', auth, (req, res) => {
-    if (!req.body.index && !req.body.name || !req.body.isCompleted)
-        return res.status.json({
+    if (!req.body.index && !req.body.name && req.body.isComplete !== undefined)
+        return res.status(400).json({
             msg: "Fill Required Fields"
         })
     Todo.findById(req.params.todoId)
         .then(todo => {
-            todo.name = name
-            todo.isCompleted = req.body.isCompleted
+            todo.name = req.body.name
+            todo.isComplete = req.body.isComplete
             todo.isBeingEdited = false
             todo.save()
                 .then(() => {
                     TodoList.findById(req.params.todoListId)
                         .then(todoList => {
-                            todoList.todos = todoList.todos.filter(todoId => todoId != todo._id)
-                            todoList.todos = todoList.todos.splice(req.body.index, 0, todo._id)
+                            todoList.todos = todoList.todos.filter((todoId) => todoId.toString() !== todo._id.toString())
+                            todoList.todos.splice(req.body.index, 0, todo._id)
                             todoList.save(() => res.json({
                                 todo,
-                                order: todoList.todos
+                                index: req.body.index
                             }))
                         })
                         .catch(err => res.status(404).json(
@@ -139,8 +139,7 @@ const io = function (io, client) {
             .then(todo => {
                 client.broadcast.emit('edit-todo-initiate',
                     {
-                        todo,
-                        userName
+                        todo
                     })
             })
             .catch(err => {

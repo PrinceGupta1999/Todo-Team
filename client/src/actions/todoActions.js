@@ -1,7 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
-import { SET_TODOS, TODOS_LOADING, REMOVE_TODO } from "./types";
+import { SET_TODOS, TODOS_LOADING, REMOVE_TODO, EDIT_TODO, ADD_TODO } from "./types";
 
 // Get Todos
 export const getTodos = (todoListId) => dispatch => {
@@ -26,13 +26,43 @@ export const getTodos = (todoListId) => dispatch => {
 };
 
 // Edit a Todo
-export const editTodo = (todoListId) => dispatch => {
-
+export const editTodo = (todoListId, todo) => dispatch => {
+    const token = localStorage.jwtToken
+    setAuthToken(token)
+    axios
+        .patch("/api/todolists/" + todoListId + "/todos/" + todo.id, todo)
+        .then(res => {
+            // console.log(res.data)
+            // res.data = Contains Collection of Todos
+            dispatch({
+                type: EDIT_TODO,
+                payload: res.data
+            })
+        })
+        .catch(err => {
+            // console.log(err)
+            dispatch(setErrors(err.response.data))
+        });
 };
 
 // Create a Todo
-export const createTodo = (todoListId) => dispatch => {
-
+export const createTodo = (todoListId, todo) => dispatch => {
+    const token = localStorage.jwtToken
+    setAuthToken(token)
+    axios
+        .post("/api/todolists/" + todoListId + "/todos/", todo)
+        .then(res => {
+            // console.log(res.data)
+            // res.data = Contains Collection of Todos
+            dispatch({
+                type: ADD_TODO,
+                payload: res.data
+            })
+        })
+        .catch(err => {
+            // console.log(err)
+            dispatch(setErrors(err.response.data))
+        });
 };
 
 

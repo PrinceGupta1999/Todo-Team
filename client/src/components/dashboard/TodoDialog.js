@@ -120,7 +120,7 @@ class TodoDialog extends React.Component {
     }
     onSubmitCreate = e => {
         e.preventDefault()
-        this.props.createTodo(this.props.todoList.todoListId, this.state.createTodo)
+        this.props.createTodo(this.props.todoList.todoListId, this.state.createdTodo)
     }
 
     render() {
@@ -170,7 +170,7 @@ class TodoDialog extends React.Component {
                                 disabled={isBeingEdited || !isEditor}
                                 onChange={this.onChangePanel(_id, name, index, isComplete)}>
                                 <ExpansionPanelSummary expandIcon={<EditIcon color="primary" />}>
-                                    <Typography className={[classes.heading, (isComplete ? classes.complete : null)]}>{name}</Typography>
+                                    <Typography className={classes.heading}>{name}</Typography>
                                     {isEditor ? (
                                         <Grid container justify="flex-end">
                                             <IconButton
