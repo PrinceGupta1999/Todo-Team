@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { setErrors } from "../../actions/errorActions";
 import ChipInput from 'material-ui-chip-input'
 import { deleteTodoList, createTodoList } from "../../actions/todoListActions";
+import { setTodos } from "../../actions/todoActions";
 import {
     Paper,
     List,
@@ -85,6 +86,7 @@ class TodoList extends Component {
             },
             todoDialogOpen: false
         })
+        this.props.setTodos([])
     }
     onChange = name => e => {
         if (Object.entries(this.state.errors).length !== 0) {
@@ -165,7 +167,7 @@ class TodoList extends Component {
                     </List>
                 ) : null}
                 {isAdmin ? (
-                    <ExpansionPanel>
+                    <ExpansionPanel defaultExpanded>
                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                             <Typography className={classes.heading}>Create Todo List</Typography>
                         </ExpansionPanelSummary>
@@ -174,6 +176,7 @@ class TodoList extends Component {
                                 <form noValidate onSubmit={this.onSubmit} autoComplete="off">
                                     <TextField
                                         fullWidth
+                                        required
                                         helperText={errors.name}
                                         error={errors.name !== undefined}
                                         label="Name"
@@ -183,6 +186,7 @@ class TodoList extends Component {
                                     />
                                     <TextField
                                         fullWidth
+                                        required
                                         helperText={errors.description}
                                         error={errors.description !== undefined}
                                         label="Description"
@@ -230,6 +234,7 @@ TodoList.propTypes = {
     classes: PropTypes.object.isRequired,
     deleteTodoList: PropTypes.func.isRequired,
     createTodoList: PropTypes.func.isRequired,
+    setTodos: PropTypes.func.isRequired,
     setErrors: PropTypes.func.isRequired,
     error: PropTypes.object.isRequired,
     todo: PropTypes.object.isRequired
@@ -244,6 +249,7 @@ export default connect(
     {
         deleteTodoList,
         setErrors,
-        createTodoList
+        createTodoList,
+        setTodos
     }
 )(withStyles(styles)(TodoList));

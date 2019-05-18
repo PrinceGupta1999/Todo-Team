@@ -182,9 +182,7 @@ router.post('/', auth, (req, res) => {
             Promise.all(promises)
                 .then((values) => {
                     // console.log(values)
-                    res.json({
-                        todoList
-                    })
+                    res.json(todoList)
                 })
                 .catch(err => {
                     // console.log(err)

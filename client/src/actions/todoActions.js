@@ -5,6 +5,8 @@ import { SET_TODOS, TODOS_LOADING, REMOVE_TODO } from "./types";
 
 // Get Todos
 export const getTodos = (todoListId) => dispatch => {
+    if (todoListId === "")
+        return;
     const token = localStorage.jwtToken
     dispatch({
         type: TODOS_LOADING
@@ -15,10 +17,7 @@ export const getTodos = (todoListId) => dispatch => {
         .then(res => {
             // console.log(res.data)
             // res.data = Contains Collection of Todos
-            dispatch({
-                type: SET_TODOS,
-                payload: res.data
-            })
+            dispatch(setTodos(res.data))
         })
         .catch(err => {
             // console.log(err)
@@ -28,7 +27,7 @@ export const getTodos = (todoListId) => dispatch => {
 
 // Edit Todos
 export const editTodo = (todoListId) => dispatch => {
-    
+
 };
 
 
@@ -52,3 +51,9 @@ export const deleteTodo = (todoListId, todoId) => dispatch => {
         });
 };
 
+export const setTodos = (todos) => {
+    return {
+        type: SET_TODOS,
+        payload: todos
+    }
+}
