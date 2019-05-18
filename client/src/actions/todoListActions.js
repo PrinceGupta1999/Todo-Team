@@ -33,11 +33,8 @@ export const createTodoList = (todoListData) => dispatch => {
         .post("/api/todolists", todoListData)
         .then(res => {
             console.log(res.data)
-            // res.data = Contains Collection of TodoLists
-            dispatch({
-                type: ADD_TODOLIST,
-                payload: res.data
-            })
+            // res.data = Contains Newly created TodoList
+            dispatch(addTodoList(res.data))
         })
         .catch(err => {
             // console.log(err)
@@ -64,4 +61,11 @@ export const deleteTodoList = (todoListId) => dispatch => {
             dispatch(setErrors(err.response.data))
         });
 };
+
+export const addTodoList = todoList => {
+    return {
+        type: ADD_TODOLIST,
+        payload: todoList
+    }
+}
 

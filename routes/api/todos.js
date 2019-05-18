@@ -18,7 +18,12 @@ router.get('/', auth, (req, res) => {
                     _id: {
                         $in: todoList.todos
                     }
-                }).then(todos => res.json(todos))
+                }).then(todos => {
+                    todos.sort(function (a, b) {
+                        return todoList.todos.indexOf(a._id) - todoList.todos.indexOf(b._id)
+                    })
+                    res.json(todos)
+                })
         })
         .catch(err => {
             res.json(404).json({

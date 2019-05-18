@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getTodos, deleteTodo, editTodo, createTodo } from '../../actions/todoActions'
-import { setErrors } from '../../actions/errorActions'
+import { getTodos, deleteTodo, editTodo, createTodo } from '../../actions/todoActions';
+import classNames from 'classnames';
+import { setErrors } from '../../actions/errorActions';
 import { withStyles } from '@material-ui/core/styles';
 import {
     Dialog,
@@ -24,7 +25,8 @@ import {
     FormControl,
     FormGroup,
     FormControlLabel,
-    Switch
+    Switch,
+    CircularProgress
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
@@ -54,7 +56,10 @@ const styles = theme => ({
     },
     complete: {
         textDecoration: 'line-through'
-    }
+    },
+    progress: {
+        margin: theme.spacing.unit * 2,
+    },
 });
 
 function Transition(props) {
@@ -162,6 +167,11 @@ class TodoDialog extends React.Component {
                         </ListItem>
                         <Divider />
                     </List>
+                    {this.props.todo.loading ? (
+                        <Grid container justify="center">
+                            <CircularProgress className={classes.progress} />
+                        </Grid>
+                    ) : null}
                     {todos.map(({ _id, name, isBeingEdited, isComplete }, index) => {
                         return (
                             <ExpansionPanel
@@ -170,7 +180,10 @@ class TodoDialog extends React.Component {
                                 disabled={isBeingEdited || !isEditor}
                                 onChange={this.onChangePanel(_id, name, index, isComplete)}>
                                 <ExpansionPanelSummary expandIcon={<EditIcon color="primary" />}>
-                                    <Typography className={classes.heading}>{name}</Typography>
+                                    <Typography
+                                        className={classNames(classes.heading, isComplete ? classes.complete : null)}
+                                    >
+                                        {name}</Typography>
                                     {isEditor ? (
                                         <Grid container justify="flex-end">
                                             <IconButton

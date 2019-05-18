@@ -50,7 +50,7 @@ class Dashboard extends Component {
         const { user } = this.props.auth;
         const { value } = this.state;
         const { notifications } = this.props.notification;
-        const { todoLists } = this.props.todoList;
+        const { todoLists, loading } = this.props.todoList;
         const { classes } = this.props;
         return (
             <Fragment>
@@ -67,6 +67,7 @@ class Dashboard extends Component {
                         {value === 0 &&
                             <TabContainer>
                                 <TodoList
+                                    loading={loading}
                                     todoLists={todoLists.admin}
                                     isAdmin={true}
                                     isEditor={true} />
@@ -74,6 +75,7 @@ class Dashboard extends Component {
                         {value === 1 &&
                             <TabContainer>
                                 <TodoList
+                                    loading={loading}
                                     todoLists={todoLists.edit}
                                     isAdmin={false}
                                     isEditor={true} />
@@ -81,6 +83,7 @@ class Dashboard extends Component {
                         {value === 2 &&
                             <TabContainer>
                                 <TodoList
+                                    loading={loading}
                                     todoLists={todoLists.view}
                                     isAdmin={false}
                                     isEditor={false} />

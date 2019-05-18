@@ -17,7 +17,6 @@ router.get('/', auth, (req, res) => {
             ...err,
             msg: 'Invalid User ID'
         }))
-
 })
 
 
@@ -30,7 +29,6 @@ router.delete('/:notificationId', auth, (req, res) => {
             user.notifications = user.notifications.filter(notification => {
                 if (notification._id == req.params.notificationId) {
                     if (req.body.accept) {
-                        console.log(notification.todoList);
                         switch (notification.permission) {
                             case 'EDIT':
                                 user.todoLists.edit.push(notification.todoList);
@@ -51,7 +49,7 @@ router.delete('/:notificationId', auth, (req, res) => {
                     success: true
                 })).catch(err => res.status(500).json({
                     success: false,
-                    err
+                    ...err
                 }))
 
 

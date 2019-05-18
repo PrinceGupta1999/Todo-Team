@@ -20,7 +20,8 @@ import {
     TextField,
     Grid,
     Button,
-    Divider
+    Divider,
+    CircularProgress
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import PageviewIcon from "@material-ui/icons/Pageview";
@@ -43,6 +44,9 @@ const styles = theme => ({
         fontSize: theme.typography.pxToRem(20),
         flexBasis: '33.33%',
         flexShrink: 0,
+    },
+    progress: {
+        margin: theme.spacing.unit * 2,
     },
 });
 
@@ -126,7 +130,7 @@ class TodoList extends Component {
         this.props.createTodoList(this.state.createdTodoList)
     }
     render() {
-        const { todoLists, isEditor, isAdmin, classes } = this.props;
+        const { todoLists, isEditor, isAdmin, classes, loading} = this.props;
         const { errors } = this.state;
         return (
             <Paper className={classes.paper}>
@@ -136,6 +140,12 @@ class TodoList extends Component {
                     closeTodoDialog={this.closeTodoDialog}
                     todoDialogOpen={this.state.todoDialogOpen}
                 />
+                {loading ? (
+                    <Grid container justify="center">
+                        <CircularProgress className={classes.progress} />
+                    </Grid>
+                ) : null}
+                
                 {todoLists.length ? (
                     <List>
                         {todoLists.map(({ _id, name, description }) => {
