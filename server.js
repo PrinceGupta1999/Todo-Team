@@ -7,6 +7,7 @@ const users = require("./routes/api/users");
 const todoLists = require("./routes/api/todoLists");
 const notifications = require("./routes/api/notifications");
 const socket = require("socket.io");
+const path = require('path');
 
 const app = express();
 
@@ -45,7 +46,15 @@ app.use("/api/todolists", todoLists.router);
 app.use("/api/notifications", notifications.router);
 
 const port = process.env.PORT || 5000;
+// Serve Static assets if in production
+if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express.static('client/build'));
+    app.get('/', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+    })
 
+}
 const io = socket(app.listen(port, () => console.log(`Server up and running on port ${port} !`)));
 
 // Use socket.io for state management of clients
