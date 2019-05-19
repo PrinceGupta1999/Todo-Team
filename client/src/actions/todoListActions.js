@@ -2,6 +2,7 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
 import { SET_TODOLISTS, TODOLISTS_LOADING, ADD_TODOLIST, REMOVE_TODOLIST } from "./types";
+import { socket } from "../App";
 
 // Get TodoLists
 export const getTodoLists = () => dispatch => {
@@ -32,7 +33,7 @@ export const createTodoList = (todoListData) => dispatch => {
     axios
         .post("/api/todolists", todoListData)
         .then(res => {
-            console.log(res.data)
+            // console.log(res.data)
             // res.data = Contains Newly created TodoList
             dispatch(addTodoList(res.data))
         })
@@ -51,6 +52,7 @@ export const deleteTodoList = (todoListId) => dispatch => {
         .then(res => {
             // console.log(res.data)
             // Remove Todo List from current lists of todolists
+            socket.emit('todolist-delete', todoListId)
             dispatch({
                 type: REMOVE_TODOLIST,
                 payload: todoListId
@@ -69,3 +71,9 @@ export const addTodoList = todoList => {
     }
 }
 
+export const deleteTodoListLocal = (todoListId) => dispatch => {
+    dispatch({
+        type: REMOVE_TODOLIST,
+        payload: todoListId
+    })
+}

@@ -193,6 +193,18 @@ router.post('/', auth, (req, res) => {
         })
 });
 
+// @route GET api/todolists/:todoListId
+// @descr Get a TodoList by Id
+// @access Private
+router.get('/:todoListId', auth, (req, res) => {
+    TodoList.findById(req.params.todoListId)
+        .then(todoList => res.json(todoList))
+        .catch(err => res.status(404).json({
+            ...err,
+            success: false
+        }))
+});
+
 // @route DELETE api/todolists/:todoListId
 // @descr Delete TodoList
 // @access Private

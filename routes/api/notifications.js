@@ -26,8 +26,10 @@ router.get('/', auth, (req, res) => {
 router.delete('/:notificationId', auth, (req, res) => {
     User.findById(req.user.id)
         .then(user => {
+            var todoListId = null;
             user.notifications = user.notifications.filter(notification => {
                 if (notification._id == req.params.notificationId) {
+                    todoListId = notification.todoList;
                     if (req.body.accept) {
                         switch (notification.permission) {
                             case 'EDIT':
@@ -46,7 +48,8 @@ router.delete('/:notificationId', auth, (req, res) => {
             })
             user.save()
                 .then(user => res.json({
-                    success: true
+                    success: true,
+                    todoListId
                 })).catch(err => res.status(500).json({
                     success: false,
                     ...err

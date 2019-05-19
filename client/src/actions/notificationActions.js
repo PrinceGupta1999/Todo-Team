@@ -15,7 +15,6 @@ export const getNotifications = () => dispatch => {
             dispatch(setNotifications(res.data.notifications))
         })
         .catch(err => {
-            console.log(err)
             // console.log(err)
             dispatch(setErrors(err.response.data))
         });

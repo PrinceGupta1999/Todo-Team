@@ -19,7 +19,6 @@ export default function (state = initialState, action) {
             };
         case REMOVE_NOTIFICATION:
             const notifications = state.notifications.filter(notification => notification._id !== action.payload);
-            console.log(notifications)
             return {
                 ...state,
                 notifications
