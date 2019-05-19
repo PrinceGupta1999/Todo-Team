@@ -2,9 +2,11 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getTodos, deleteTodo, editTodo, createTodo } from '../../actions/todoActions';
+import { deleteTodoLocal, editTodoLocal, createTodoLocal, setTodos } from '../../actions/todoActions';
 import classNames from 'classnames';
 import { setErrors } from '../../actions/errorActions';
 import { withStyles } from '@material-ui/core/styles';
+import { socket } from '../../App';
 import {
     Dialog,
     ListItemText,
@@ -26,7 +28,7 @@ import {
     FormGroup,
     FormControlLabel,
     Switch,
-    CircularProgress
+    CircularProgress,
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
@@ -41,7 +43,7 @@ const styles = theme => ({
         flex: 1,
     },
     button: {
-        margin: theme.spacing.unit * 2,
+        margin: theme.spacing.unit,
     },
     heading: {
         fontSize: theme.typography.pxToRem(20),
@@ -79,18 +81,70 @@ class TodoDialog extends React.Component {
         },
         errors: {}
     }
+    componentDidMount() {
+        // Setting up socket events
+        socket.on('edit-todo', todo => {
+            var index = -1
+            this.props.todo.todos.filter(({ _id }, i) => {
+                if (_id.toString() === (todo._id).toString()) {
+                    index = i
+                    return false
+                }
+                return true
+            })
+            // console.log(index, todo, this.props.todo.todos)
+            if (index !== -1)
+                this.props.editTodoLocal({
+                    todo,
+                    index
+                })
+        })
+        socket.on('delete-todo', todoId => {
+            this.props.deleteTodoLocal(todoId)
+        })
+        socket.on('create-todo', ({ todoListId, todo }) => {
+            if (this.props.todoList.todoListId === todoListId)
+                this.props.createTodoLocal(todo)
+        })
+    }
+
+    // Fired on Closing The Dialog
+    handleClose = () => {
+        if (this.state.editedTodo.id !== "") {
+            socket.emit('todo-edit-end', this.state.editedTodo.id)
+        }
+        this.setState({
+            editedTodo: {
+                name: "",
+                index: "",
+                id: "",
+                isComplete: false
+            },
+            createdTodo: {
+                name: "",
+            },
+            errors: {}
+        })
+        this.props.setTodos([])
+        this.props.closeTodoDialog()
+    }
+
     componentDidUpdate(prevProps) {
         if (prevProps.todoList.todoListId === "")
             this.props.getTodos(this.props.todoList.todoListId);
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            errors: nextProps.error.errors
-        })
-    }
+    // componentWillReceiveProps(nextProps) {
+    //     this.setState({
+    //         errors: nextProps.error.errors,
+    //     })
+    // }
 
     onChangePanel = (id, name, index, isComplete) => (event, expanded) => {
+        // To handle event when changing panels
+        if (this.state.editedTodo.id !== "" && this.state.editedTodo.id !== id) {
+            socket.emit('todo-edit-end', this.state.editedTodo.id)
+        }
         var newEditedTodo = { ...this.state.editedTodo }
         newEditedTodo.id = expanded ? id : ""
         newEditedTodo.name = expanded ? name : ""
@@ -99,6 +153,14 @@ class TodoDialog extends React.Component {
         this.setState({
             editedTodo: newEditedTodo
         })
+
+        // Socket Events for handling other clients know todo state
+        if (expanded) {
+            socket.emit('todo-edit-begin', id)
+        }
+        else {
+            socket.emit('todo-edit-end', id)
+        }
     }
 
     onChangeCreate = name => e => {
@@ -139,14 +201,14 @@ class TodoDialog extends React.Component {
                 <Dialog
                     fullScreen
                     open={todoDialogOpen}
-                    onClose={this.props.closeTodoDialog}
+                    onClose={this.handleClose}
                     TransitionComponent={Transition}
                 >
                     <AppBar className={classes.appBar}>
                         <Toolbar>
                             <IconButton
                                 color="inherit"
-                                onClick={this.props.closeTodoDialog}
+                                onClick={this.handleClose}
                                 aria-label="Close">
                                 <CloseIcon />
                             </IconButton>
@@ -177,24 +239,15 @@ class TodoDialog extends React.Component {
                             <ExpansionPanel
                                 key={_id}
                                 expanded={this.state.editedTodo.id === _id}
-                                disabled={isBeingEdited || !isEditor}
+                                disabled={(isBeingEdited && _id.toString() !== this.state.editedTodo.id)
+                                    || !isEditor}
                                 onChange={this.onChangePanel(_id, name, index, isComplete)}>
-                                <ExpansionPanelSummary expandIcon={<EditIcon color="primary" />}>
+                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                                     <Typography
                                         className={classNames(classes.heading, isComplete ? classes.complete : null)}
                                     >
-                                        {name}</Typography>
-                                    {isEditor ? (
-                                        <Grid container justify="flex-end">
-                                            <IconButton
-                                                color="secondary"
-                                                disabled={isBeingEdited}
-                                                onClick={() => this.props.deleteTodo(todoListId, _id)}
-                                                size="small"
-                                            ><DeleteIcon />
-                                            </IconButton>
-                                        </Grid>
-                                    ) : null}
+                                        {name}
+                                    </Typography>
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
                                     <form
@@ -215,7 +268,7 @@ class TodoDialog extends React.Component {
                                                     margin="normal"
                                                 />
                                             </Grid>
-                                            <Grid item xs={3} sm={4}>
+                                            <Grid item xs={2}>
                                                 <TextField
                                                     fullWidth
                                                     required
@@ -228,7 +281,7 @@ class TodoDialog extends React.Component {
                                                     margin="normal"
                                                 />
                                             </Grid>
-                                            <Grid item xs={2}>
+                                            <Grid item xs={3} md={2}>
                                                 <FormControl
                                                     margin="normal">
                                                     <FormGroup>
@@ -245,15 +298,19 @@ class TodoDialog extends React.Component {
                                                     </FormGroup>
                                                 </FormControl>
                                             </Grid>
-                                            <Grid item xs={4} sm={2}>
-                                                <Button
-                                                    size="large"
+                                            <Grid item xs={3} sm={2}>
+                                                <IconButton
+                                                    color="primary"
                                                     type="submit"
-                                                    variant="outlined"
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton
                                                     color="secondary"
-                                                    className={classes.button}
-                                                >Edit
-                                                </Button>
+                                                    onClick={() => this.props.deleteTodo(todoListId, _id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
                                             </Grid>
                                         </Grid>
                                     </form>
@@ -285,7 +342,7 @@ class TodoDialog extends React.Component {
                                                 margin="normal"
                                             />
                                         </Grid>
-                                        <Grid item xs={4} sm={3} md={2}>
+                                        <Grid item xs={3} sm={3} md={2}>
                                             <Button
                                                 size="large"
                                                 type="submit"
@@ -313,7 +370,10 @@ TodoDialog.propTypes = {
     error: PropTypes.object.isRequired,
     editTodo: PropTypes.func.isRequired,
     createTodo: PropTypes.func.isRequired,
-    deleteTodo: PropTypes.func.isRequired
+    deleteTodo: PropTypes.func.isRequired,
+    editTodoLocal: PropTypes.func.isRequired,
+    createTodoLocal: PropTypes.func.isRequired,
+    deleteTodoLocal: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -322,4 +382,7 @@ const mapStateToProps = state => ({
     error: state.error
 })
 
-export default connect(mapStateToProps, { getTodos, editTodo, deleteTodo, createTodo, setErrors })(withStyles(styles)(TodoDialog));
+export default connect(mapStateToProps, {
+    getTodos, editTodo, deleteTodo, createTodo, setErrors, setTodos,
+    editTodoLocal, deleteTodoLocal, createTodoLocal
+})(withStyles(styles)(TodoDialog));

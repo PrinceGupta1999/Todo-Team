@@ -7,12 +7,15 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
 
+import socketIOClient from 'socket.io-client';
+
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 
 import Landing from "./components/layout/Landing";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 
+var socket;
 const theme = createMuiTheme({
     typography: {
         useNextVariants: true
@@ -36,6 +39,10 @@ if (localStorage.jwtToken) {
     }
 }
 class App extends Component {
+    constructor() {
+        super();
+        socket = socketIOClient('http://localhost:5000')
+    }
     render() {
         return (
             <MuiThemeProvider theme={theme}>
@@ -53,4 +60,4 @@ class App extends Component {
         );
     }
 }
-export default App;
+export { App, socket };

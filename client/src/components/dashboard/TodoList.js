@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { setErrors } from "../../actions/errorActions";
 import ChipInput from 'material-ui-chip-input'
 import { deleteTodoList, createTodoList } from "../../actions/todoListActions";
-import { setTodos } from "../../actions/todoActions";
 import {
     Paper,
     List,
@@ -90,7 +89,6 @@ class TodoList extends Component {
             },
             todoDialogOpen: false
         })
-        this.props.setTodos([])
     }
     onChange = name => e => {
         if (Object.entries(this.state.errors).length !== 0) {
@@ -130,7 +128,7 @@ class TodoList extends Component {
         this.props.createTodoList(this.state.createdTodoList)
     }
     render() {
-        const { todoLists, isEditor, isAdmin, classes, loading} = this.props;
+        const { todoLists, isEditor, isAdmin, classes, loading } = this.props;
         const { errors } = this.state;
         return (
             <Paper className={classes.paper}>
@@ -145,7 +143,7 @@ class TodoList extends Component {
                         <CircularProgress className={classes.progress} />
                     </Grid>
                 ) : null}
-                
+
                 {todoLists.length ? (
                     <List>
                         {todoLists.map(({ _id, name, description }) => {
@@ -244,14 +242,11 @@ TodoList.propTypes = {
     classes: PropTypes.object.isRequired,
     deleteTodoList: PropTypes.func.isRequired,
     createTodoList: PropTypes.func.isRequired,
-    setTodos: PropTypes.func.isRequired,
     setErrors: PropTypes.func.isRequired,
-    error: PropTypes.object.isRequired,
-    todo: PropTypes.object.isRequired
+    error: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-    todo: state.todo,
     error: state.error
 })
 export default connect(
@@ -260,6 +255,5 @@ export default connect(
         deleteTodoList,
         setErrors,
         createTodoList,
-        setTodos
     }
 )(withStyles(styles)(TodoList));

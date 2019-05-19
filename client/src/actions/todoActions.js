@@ -2,6 +2,7 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
 import { SET_TODOS, TODOS_LOADING, REMOVE_TODO, EDIT_TODO, ADD_TODO } from "./types";
+import { socket } from "../App";
 
 // Get Todos
 export const getTodos = (todoListId) => dispatch => {
@@ -17,7 +18,10 @@ export const getTodos = (todoListId) => dispatch => {
         .then(res => {
             // console.log(res.data)
             // res.data = Contains Collection of Todos
-            dispatch(setTodos(res.data))
+            dispatch({
+                type: SET_TODOS,
+                payload: res.data
+            })
         })
         .catch(err => {
             // console.log(err)
@@ -53,7 +57,8 @@ export const createTodo = (todoListId, todo) => dispatch => {
         .post("/api/todolists/" + todoListId + "/todos/", todo)
         .then(res => {
             // console.log(res.data)
-            // res.data = Contains Collection of Todos
+            // res.data = Created Todo
+            socket.emit('todo-create', { todoListId, todo: res.data })
             dispatch({
                 type: ADD_TODO,
                 payload: res.data
@@ -75,6 +80,7 @@ export const deleteTodo = (todoListId, todoId) => dispatch => {
         .then(res => {
             // console.log(res.data)
             // Remove Todo  from current s of todos
+            socket.emit('todo-delete', todoId)
             dispatch({
                 type: REMOVE_TODO,
                 payload: todoId
@@ -86,9 +92,30 @@ export const deleteTodo = (todoListId, todoId) => dispatch => {
         });
 };
 
-export const setTodos = (todos) => {
-    return {
+export const setTodos = todos => dispatch => {
+    dispatch({
         type: SET_TODOS,
         payload: todos
-    }
+    })
+}
+
+export const createTodoLocal = todo => dispatch => {
+    dispatch({
+        type: ADD_TODO,
+        payload: todo
+    })
+}
+// Replace data = {todo, index} => Replace todo from list and add at new index
+export const editTodoLocal = data => dispatch => {
+    dispatch({
+        type: EDIT_TODO,
+        payload: data
+    })
+}
+
+export const deleteTodoLocal = todoId => dispatch => {
+    dispatch({
+        type: REMOVE_TODO,
+        payload: todoId
+    })
 }

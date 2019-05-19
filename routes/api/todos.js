@@ -67,25 +67,19 @@ router.post('/', auth, (req, res) => {
 router.delete('/:todoId', auth, (req, res) => {
     Todo.findById(req.params.todoId)
         .then(todo => {
-            if (todo.isBeingEdited)
-                return res.status(400).json({
-                    msg: "Todo is being edited"
-                })
-            else {
-                todo.remove().then(() => {
-                    TodoList.findByIdAndUpdate(
-                        req.params.todoListId,
-                        {
-                            $pull: {
-                                todos: req.params.todoId
-                            }
-                        })
-                        .then(() => res.json({
-                            success: true
-                        }))
+            todo.remove().then(() => {
+                TodoList.findByIdAndUpdate(
+                    req.params.todoListId,
+                    {
+                        $pull: {
+                            todos: req.params.todoId
+                        }
+                    })
+                    .then(() => res.json({
+                        success: true
+                    }))
 
-                })
-            }
+            })
         })
 })
 
@@ -101,7 +95,6 @@ router.patch('/:todoId', auth, (req, res) => {
         .then(todo => {
             todo.name = req.body.name
             todo.isComplete = req.body.isComplete
-            todo.isBeingEdited = false
             todo.save()
                 .then(() => {
                     TodoList.findById(req.params.todoListId)
@@ -125,7 +118,7 @@ router.patch('/:todoId', auth, (req, res) => {
         .catch(err => res.status(404).json(
             {
                 msg: "Todo not found",
-                err
+                ...err
             })
         )
 })
@@ -133,47 +126,50 @@ router.patch('/:todoId', auth, (req, res) => {
 // Setting up socket.io event listeners for this module
 const io = function (io, client) {
     // When a client asks to edit a Todo => inform others
-    client.on('todo-edit-begin', (userName, todoId) => {
+    client.on('todo-edit-begin', (todoId) => {
         Todo.findByIdAndUpdate(
             todoId,
             {
                 $set: {
                     isBeingEdited: true
                 }
+            },
+            {
+                new: true
             })
             .then(todo => {
-                client.broadcast.emit('edit-todo-initiate',
-                    {
-                        todo
-                    })
+                io.sockets.emit('edit-todo', todo)
             })
             .catch(err => {
                 console.log(err);
             })
     })
     // When a client either executes or cancels an edit request
-    client.on('todo-edit-end', (todoListId, todoId) => {
+    client.on('todo-edit-end', (todoId) => {
         Todo.findByIdAndUpdate(
             todoId,
             {
                 $set: {
                     isBeingEdited: false
                 }
+            },
+            {
+                new: true
             })
             .then(todo => {
-                io.sockets.emit('todolist-update', todoListId);
+                io.sockets.emit('edit-todo', todo);
             })
             .catch(err => {
                 console.log(err);
             })
     })
     // After a Todo is successfully deleted
-    client.on('todo-delete', todoListId => {
-        io.sockets.emit('todolist-update', todoListId)
+    client.on('todo-delete', todoId => {
+        client.broadcast.emit('delete-todo', todoId)
     })
-    // After a Todo is succesfully created
-    client.on('todo-create', todoListId => {
-        io.sockets.emit('todolist-update', todoListId)
+    // After a Todo is succesfully created data = {todoListId, todo}
+    client.on('todo-create', data => {
+        client.broadcast.emit('create-todo', data)
     })
 }
 

@@ -5,7 +5,6 @@ import { getTodoLists } from "../../actions/todoListActions";
 import { getNotifications } from "../../actions/notificationActions";
 import Navbar from "./Navbar";
 import TodoList from "./TodoList";
-import socketIOClient from 'socket.io-client';
 import {
     Grid,
     AppBar,
@@ -37,7 +36,6 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-        const socket = socketIOClient(this.state.server)
         this.props.getNotifications();
         this.props.getTodoLists();
     }
