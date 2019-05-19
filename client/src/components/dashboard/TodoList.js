@@ -65,6 +65,8 @@ class TodoList extends Component {
         errors: {},
         todoDialogOpen: false,
     }
+
+
     componentWillReceiveProps(nextProps) {
         this.setState({
             errors: nextProps.error.errors
@@ -243,7 +245,7 @@ TodoList.propTypes = {
     deleteTodoList: PropTypes.func.isRequired,
     createTodoList: PropTypes.func.isRequired,
     setErrors: PropTypes.func.isRequired,
-    error: PropTypes.object.isRequired
+    error: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({

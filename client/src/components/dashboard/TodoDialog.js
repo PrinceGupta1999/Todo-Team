@@ -9,6 +9,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { socket } from '../../App';
 import {
     Dialog,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
     ListItemText,
     ListItem,
     List,
@@ -79,20 +82,13 @@ class TodoDialog extends React.Component {
         createdTodo: {
             name: "",
         },
-        errors: {}
+        errors: {},
+        alertOpen: false
     }
     componentDidMount() {
         // Setting up socket events
         socket.on('edit-todo', todo => {
-            var index = -1
-            this.props.todo.todos.filter(({ _id }, i) => {
-                if (_id.toString() === (todo._id).toString()) {
-                    index = i
-                    return false
-                }
-                return true
-            })
-            // console.log(index, todo, this.props.todo.todos)
+            var index = this.props.todos.findIndex(({ _id }) => _id.toString() === todo._id.toString())
             if (index !== -1)
                 this.props.editTodoLocal({
                     todo,
@@ -106,8 +102,21 @@ class TodoDialog extends React.Component {
             if (this.props.todoList.todoListId === todoListId)
                 this.props.createTodoLocal(todo)
         })
+        socket.on('delete-todolist', todoListId => {
+            if(this.props.todoList.todoListId === todoListId) {
+                this.setState({
+                    alertOpen: true
+                })
+                this.handleClose()
+            } 
+        })
     }
-
+    // Close Alert Dialog
+    closeAlert = () => {
+        this.setState({
+            alertOpen: false
+        })
+    }
     // Fired on Closing The Dialog
     handleClose = () => {
         if (this.state.editedTodo.id !== "") {
@@ -357,6 +366,21 @@ class TodoDialog extends React.Component {
                             </ExpansionPanelDetails>
                         </ExpansionPanel>
                     ) : null}
+                </Dialog>
+                <Dialog
+                    open={this.state.alertOpen}
+                    onClose={this.closeAlert}
+                >
+                    <DialogContent>
+                        <DialogContentText>
+                            This Todo List has been Deleted the Creator. You need to refresh the page
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.closeAlert} color="primary" autoFocus>
+                        Refresh
+                        </Button>
+                    </DialogActions>
                 </Dialog>
             </Fragment>
         );

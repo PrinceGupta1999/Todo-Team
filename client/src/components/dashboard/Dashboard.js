@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getTodoLists } from "../../actions/todoListActions";
+import { getTodoLists, deleteTodoListLocal } from "../../actions/todoListActions";
 import { getNotifications } from "../../actions/notificationActions";
 import Navbar from "./Navbar";
 import TodoList from "./TodoList";
@@ -13,6 +13,7 @@ import {
     withStyles,
     Typography
 } from '@material-ui/core';
+import { socket } from "../../App";
 
 function TabContainer(props) {
     return (
@@ -38,6 +39,11 @@ class Dashboard extends Component {
     componentDidMount() {
         this.props.getNotifications();
         this.props.getTodoLists();
+
+        // Socket Events
+        socket.on('todolist-delete', todoListId => {
+            this.props.deleteTodoListLocal(todoListId)
+        })
     }
 
     handleChange = (event, value) => {
@@ -95,6 +101,7 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
     getTodoLists: PropTypes.func.isRequired,
+    deleteTodoListLocal: PropTypes.func.isRequired,
     getNotifications: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     notification: PropTypes.object.isRequired,
@@ -110,5 +117,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { getNotifications, getTodoLists }
+    { getNotifications, getTodoLists, deleteTodoListLocal }
 )(withStyles(styles)(Dashboard));
