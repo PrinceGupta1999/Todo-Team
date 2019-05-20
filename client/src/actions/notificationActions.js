@@ -1,6 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import { setErrors } from "./errorActions";
+import { getTodoLists } from "./todoListActions";
 import { SET_NOTIFICATIONS, NOTIFICATIONS_LOADING, REMOVE_NOTIFICATION } from "./types";
 
 // Get Notifications
@@ -39,6 +40,7 @@ export const handleNotification = (notificationId, accept) => dispatch => {
                 type: REMOVE_NOTIFICATION,
                 payload: notificationId
             })
+            getTodoLists()
         })
         .catch(err => dispatch(setErrors(err)))
 

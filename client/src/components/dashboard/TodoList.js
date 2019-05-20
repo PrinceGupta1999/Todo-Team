@@ -11,7 +11,6 @@ import {
     ListItem,
     ListItemSecondaryAction,
     ListItemText,
-    IconButton,
     ExpansionPanel,
     ExpansionPanelSummary,
     ExpansionPanelDetails,
@@ -23,7 +22,7 @@ import {
     CircularProgress
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
-import PageviewIcon from "@material-ui/icons/Pageview";
+import SearchIcon from "@material-ui/icons/Search";
 import TodoDialog from "./TodoDialog.js";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
@@ -41,7 +40,7 @@ const styles = theme => ({
     },
     heading: {
         fontSize: theme.typography.pxToRem(20),
-        flexBasis: '33.33%',
+        flexBasis: '66%',
         flexShrink: 0,
     },
     progress: {
@@ -156,19 +155,24 @@ class TodoList extends Component {
                                         secondary={description}
                                     />
                                     <ListItemSecondaryAction>
-                                        <IconButton
+                                        <Button
+                                            variant="contained"
                                             color="primary"
+                                            className={classes.button}
                                             onClick={() => this.openTodoDialog(_id, name, description)}
                                         >
-                                            <PageviewIcon />
-                                        </IconButton>
+                                            View
+                                            <SearchIcon className={classes.rightIcon} />
+                                        </Button>
                                         {isAdmin ? (
-                                            <IconButton
+                                            <Button
+                                                variant="contained"
+                                                className={classes.button}
                                                 color="secondary"
                                                 onClick={() => this.props.deleteTodoList(_id)}
                                             >
-                                                <DeleteIcon />
-                                            </IconButton>
+                                                <DeleteIcon className={classes.rightIcon} />
+                                            </Button>
                                         ) : null}
                                     </ListItemSecondaryAction>
                                 </ListItem>

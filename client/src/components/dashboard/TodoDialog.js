@@ -35,8 +35,11 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
-import EditIcon from "@material-ui/icons/Edit";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import SaveIcon from "@material-ui/icons/Save";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropUp";
+
 
 const styles = theme => ({
     appBar: {
@@ -50,7 +53,7 @@ const styles = theme => ({
     },
     heading: {
         fontSize: theme.typography.pxToRem(20),
-        flexBasis: '33.33%',
+        flexBasis: '66%',
         flexShrink: 0,
     },
     root: {
@@ -103,12 +106,12 @@ class TodoDialog extends React.Component {
                 this.props.createTodoLocal(todo)
         })
         socket.on('delete-todolist', todoListId => {
-            if(this.props.todoList.todoListId === todoListId) {
+            if (this.props.todoList.todoListId === todoListId) {
                 this.setState({
                     alertOpen: true
                 })
                 this.handleClose()
-            } 
+            }
         })
     }
     // Close Alert Dialog
@@ -179,6 +182,14 @@ class TodoDialog extends React.Component {
             createdTodo: newCreatedTodo
         })
     }
+    onRearrange = index => {
+        var newEditedTodo = { ...this.state.editedTodo }
+        newEditedTodo.index = index
+        this.setState({
+            editedTodo: newEditedTodo
+        }, () => this.props.editTodo(this.props.todoList.todoListId, this.state.editedTodo))
+        
+    }
     onChangeEdit = name => e => {
         var newEditedTodo = { ...this.state.editedTodo }
         if (name === 'isComplete') {
@@ -243,129 +254,164 @@ class TodoDialog extends React.Component {
                             <CircularProgress className={classes.progress} />
                         </Grid>
                     ) : null}
-                    {todos.map(({ _id, name, isBeingEdited, isComplete }, index) => {
-                        return (
-                            <ExpansionPanel
-                                key={_id}
-                                expanded={this.state.editedTodo.id === _id}
-                                disabled={(isBeingEdited && _id.toString() !== this.state.editedTodo.id)
-                                    || !isEditor}
-                                onChange={this.onChangePanel(_id, name, index, isComplete)}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography
-                                        className={classNames(classes.heading, isComplete ? classes.complete : null)}
-                                    >
-                                        {name}
-                                    </Typography>
-                                </ExpansionPanelSummary>
-                                <ExpansionPanelDetails>
-                                    <form
-                                        noValidate
-                                        onSubmit={this.onSubmitEdit}
-                                        autoComplete="off"
-                                        className={classes.root}>
-                                        <Grid container justify="center" spacing={16} className={classes.root}>
-                                            <Grid item xs={3} sm={4}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    helperText={errors.name}
-                                                    error={errors.name !== undefined}
-                                                    label="Name"
-                                                    value={this.state.editedTodo.name}
-                                                    onChange={this.onChangeEdit("name")}
-                                                    margin="normal"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={2}>
-                                                <TextField
-                                                    fullWidth
-                                                    required
-                                                    type="number"
-                                                    helperText={errors.index}
-                                                    error={errors.index !== undefined}
-                                                    label="Index"
-                                                    value={this.state.editedTodo.index}
-                                                    onChange={this.onChangeEdit("index")}
-                                                    margin="normal"
-                                                />
-                                            </Grid>
-                                            <Grid item xs={3} md={2}>
-                                                <FormControl
-                                                    margin="normal">
-                                                    <FormGroup>
-                                                        <FormControlLabel
-                                                            control={
-                                                                <Switch
-                                                                    checked={this.state.editedTodo.isComplete}
-                                                                    onChange={this.onChangeEdit('isComplete')}
-                                                                    value={this.state.editedTodo.isComplete}
-                                                                />
-                                                            }
-                                                            label={this.state.editedTodo.isComplete ? 'Complete' : 'Incomplete'}
+                    <Grid container justify="center">
+                        <Grid item xs={12} sm={11} md={9}>
+                            {todos.map(({ _id, name, isBeingEdited, isComplete }, index) => {
+                                return (
+                                    <ExpansionPanel
+                                        key={_id}
+                                        expanded={this.state.editedTodo.id === _id}
+                                        disabled={(isBeingEdited && _id.toString() !== this.state.editedTodo.id)
+                                            || !isEditor}
+                                        onChange={this.onChangePanel(_id, name, index, isComplete)}>
+                                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                            <Typography
+                                                className={classNames(classes.heading, isComplete ? classes.complete : null)}
+                                            >
+                                                {name}
+                                            </Typography>
+                                        </ExpansionPanelSummary>
+                                        <ExpansionPanelDetails>
+                                            <form
+                                                noValidate
+                                                onSubmit={this.onSubmitEdit}
+                                                autoComplete="off"
+                                                className={classes.root}>
+                                                <Grid container justify="center" spacing={16} className={classes.root}>
+                                                    <Grid item xs={8} md={9}>
+                                                        <TextField
+                                                            required
+                                                            fullWidth
+                                                            helperText={errors.name}
+                                                            error={errors.name !== undefined}
+                                                            label="Name"
+                                                            value={this.state.editedTodo.name}
+                                                            onChange={this.onChangeEdit("name")}
+                                                            margin="normal"
                                                         />
-                                                    </FormGroup>
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid item xs={3} sm={2}>
-                                                <IconButton
-                                                    color="primary"
-                                                    type="submit"
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
-                                                <IconButton
-                                                    color="secondary"
-                                                    onClick={() => this.props.deleteTodo(todoListId, _id)}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </Grid>
-                                        </Grid>
-                                    </form>
-                                </ExpansionPanelDetails>
-                            </ExpansionPanel>
-                        )
-                    })}
-                    {isEditor ? (
-                        <ExpansionPanel defaultExpanded>
-                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography className={classes.heading}>Create Todo</Typography>
-                            </ExpansionPanelSummary>
-                            <ExpansionPanelDetails>
-                                <form
-                                    noValidate
-                                    onSubmit={this.onSubmitCreate}
-                                    autoComplete="off"
-                                    className={classes.root}>
-                                    <Grid container justify="center">
-                                        <Grid item xs={8}>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                helperText={errors.name}
-                                                error={errors.name !== undefined}
-                                                label="Name"
-                                                value={this.state.createdTodo.name}
-                                                onChange={this.onChangeCreate("name")}
-                                                margin="normal"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3} sm={3} md={2}>
-                                            <Button
-                                                size="large"
-                                                type="submit"
-                                                variant="outlined"
-                                                color="primary"
-                                                className={classes.button}
-                                            >Create
+                                                    </Grid>
+                                                    {/* <Grid item xs={2}>
+                                                        <TextField
+                                                            fullWidth
+                                                            required
+                                                            type="number"
+                                                            helperText={errors.index}
+                                                            error={errors.index !== undefined}
+                                                            label="Index"
+                                                            value={this.state.editedTodo.index}
+                                                            onChange={this.onChangeEdit("index")}
+                                                            margin="normal"
+                                                        />
+                                                    </Grid> */}
+                                                    <Grid item xs={4} md={3}>
+                                                        <FormControl
+                                                            margin="normal">
+                                                            <FormGroup>
+                                                                <FormControlLabel
+                                                                    control={
+                                                                        <Switch
+                                                                            checked={this.state.editedTodo.isComplete}
+                                                                            onChange={this.onChangeEdit('isComplete')}
+                                                                            value={this.state.editedTodo.isComplete}
+                                                                        />
+                                                                    }
+                                                                    label={this.state.editedTodo.isComplete ? 'Complete' : 'Incomplete'}
+                                                                />
+                                                            </FormGroup>
+                                                        </FormControl>
+                                                    </Grid>
+                                                    <Divider />
+                                                    <Grid item xs={6}>
+                                                        <Grid container>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="default"
+                                                                className={classes.button}
+                                                                onClick={() => this.onRearrange(index - 1)}
+                                                            >
+                                                                Move Up
+                                                                <ArrowDropUpIcon className={classes.rightIcon} />
+                                                            </Button>
+                                                            <IconButton
+                                                                variant="contained"
+                                                                color="default"
+                                                                className={classes.button}
+                                                                onClick={() => this.onRearrange(index + 1)}
+                                                            >
+                                                                Move Down
+                                                                <ArrowDropDownIcon className={classes.rightIcon} />
+                                                            </IconButton>
+                                                        </Grid>
+                                                    </Grid>
+                                                    <Grid item xs={6}>
+                                                        <Grid container justify="flex-end">
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                className={classes.button}
+                                                                type="submit"
+                                                            >
+                                                                Save
+                                                                <SaveIcon className={classes.rightIcon} />
+                                                            </Button>
+                                                            <IconButton
+                                                                variant="contained"
+                                                                color="default"
+                                                                className={classes.button}
+                                                                onClick={() => this.props.deleteTodo(todoListId, _id)}
+                                                            >
+                                                                Delete
+                                                                <DeleteIcon className={classes.rightIcon} />
+                                                            </IconButton>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Grid>
+                                            </form>
+                                        </ExpansionPanelDetails>
+                                    </ExpansionPanel>
+                                )
+                            })}
+                            {isEditor ? (
+                                <ExpansionPanel defaultExpanded>
+                                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography className={classes.heading}>Create Todo</Typography>
+                                    </ExpansionPanelSummary>
+                                    <ExpansionPanelDetails>
+                                        <form
+                                            noValidate
+                                            onSubmit={this.onSubmitCreate}
+                                            autoComplete="off"
+                                            className={classes.root}>
+                                            <Grid container justify="center">
+                                                <Grid item xs={8}>
+                                                    <TextField
+                                                        fullWidth
+                                                        required
+                                                        helperText={errors.name}
+                                                        error={errors.name !== undefined}
+                                                        label="Name"
+                                                        value={this.state.createdTodo.name}
+                                                        onChange={this.onChangeCreate("name")}
+                                                        margin="normal"
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={3} sm={3} md={2}>
+                                                    <Button
+                                                        size="large"
+                                                        type="submit"
+                                                        variant="outlined"
+                                                        color="primary"
+                                                        className={classes.button}
+                                                    >Create
                                             </Button>
-                                        </Grid>
-                                    </Grid>
-                                </form>
-                            </ExpansionPanelDetails>
-                        </ExpansionPanel>
-                    ) : null}
+                                                </Grid>
+                                            </Grid>
+                                        </form>
+                                    </ExpansionPanelDetails>
+                                </ExpansionPanel>
+                            ) : null}
+                        </Grid>
+                    </Grid>
                 </Dialog>
                 <Dialog
                     open={this.state.alertOpen}
@@ -378,7 +424,7 @@ class TodoDialog extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.closeAlert} color="primary" autoFocus>
-                        Refresh
+                            Refresh
                         </Button>
                     </DialogActions>
                 </Dialog>
