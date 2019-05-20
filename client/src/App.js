@@ -47,7 +47,7 @@ if (localStorage.jwtToken) {
 class App extends Component {
     constructor() {
         super();
-        socket = socketIOClient('http://localhost:5000')
+        socket = socketIOClient('https://aqueous-caverns-72878.herokuapp.com/')
     }
     render() {
         return (
