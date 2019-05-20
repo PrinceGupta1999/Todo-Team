@@ -32,7 +32,6 @@ const styles = theme => ({
 
 class Dashboard extends Component {
     state = {
-        server: "http://localhost:5000",
         value: 0
     }
 
@@ -60,7 +59,7 @@ class Dashboard extends Component {
             <Fragment>
                 <Navbar userName={user.name} notificationCount={notifications.length} />
                 <Grid container justify="center">
-                    <Grid item xs={11} sm={9} className={classes.container}>
+                    <Grid item xs={12} sm={9} className={classes.container}>
                         <AppBar position="static">
                             <Tabs value={value} onChange={this.handleChange} variant="fullWidth">
                                 <Tab label="Created" />

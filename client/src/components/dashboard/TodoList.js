@@ -36,7 +36,10 @@ const styles = theme => ({
         minHeight: '60vh',
     },
     button: {
-        margin: theme.spacing.unit * 2,
+        margin: theme.spacing.unit,
+        [theme.breakpoints.down('sm')]: {
+            margin: theme.spacing.unit * 0.25,
+        }
     },
     heading: {
         fontSize: theme.typography.pxToRem(20),
@@ -67,6 +70,18 @@ class TodoList extends Component {
 
 
     componentWillReceiveProps(nextProps) {
+        if (this.state.selectedTodoList.todoListId !== "") {
+            if (this.props.todoLists.findIndex(({ _id }) => this.state.selectedTodoList.todoListId
+                === _id.toString()) !== -1) {
+                this.setState({
+                    selectedTodoList: {
+                        todoListId: "",
+                        todoListName: "",
+                        todoListDescription: ""
+                    }
+                })
+            }
+        }
         this.setState({
             errors: nextProps.error.errors
         })
@@ -156,6 +171,7 @@ class TodoList extends Component {
                                     />
                                     <ListItemSecondaryAction>
                                         <Button
+                                            size="small"
                                             variant="contained"
                                             color="primary"
                                             className={classes.button}
@@ -166,11 +182,12 @@ class TodoList extends Component {
                                         </Button>
                                         {isAdmin ? (
                                             <Button
+                                                size="small"
                                                 variant="contained"
                                                 className={classes.button}
                                                 color="secondary"
                                                 onClick={() => this.props.deleteTodoList(_id)}
-                                            >
+                                            >Delete
                                                 <DeleteIcon className={classes.rightIcon} />
                                             </Button>
                                         ) : null}

@@ -32,13 +32,14 @@ import {
     FormControlLabel,
     Switch,
     CircularProgress,
+    DialogTitle,
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SaveIcon from "@material-ui/icons/Save";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropUp";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 
 
 const styles = theme => ({
@@ -68,6 +69,9 @@ const styles = theme => ({
     progress: {
         margin: theme.spacing.unit * 2,
     },
+    todoContainer: {
+        marginTop: theme.spacing.unit * 2,
+    },
 });
 
 function Transition(props) {
@@ -91,7 +95,7 @@ class TodoDialog extends React.Component {
     componentDidMount() {
         // Setting up socket events
         socket.on('edit-todo', todo => {
-            var index = this.props.todos.findIndex(({ _id }) => _id.toString() === todo._id.toString())
+            var index = this.props.todo.todos.findIndex(({ _id }) => _id.toString() === todo._id.toString())
             if (index !== -1)
                 this.props.editTodoLocal({
                     todo,
@@ -99,6 +103,7 @@ class TodoDialog extends React.Component {
                 })
         })
         socket.on('delete-todo', todoId => {
+            console.log('Here');
             this.props.deleteTodoLocal(todoId)
         })
         socket.on('create-todo', ({ todoListId, todo }) => {
@@ -114,43 +119,50 @@ class TodoDialog extends React.Component {
             }
         })
     }
-    // Close Alert Dialog
-    closeAlert = () => {
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.todoList.todoListId === "" && nextProps.todoDialogOpen) {
+            this.setState({
+                alertOpen: true
+            })
+        }
         this.setState({
-            alertOpen: false
+            errors: nextProps.error.errors,
         })
     }
+
     // Fired on Closing The Dialog
     handleClose = () => {
+        console.log('Here')
         if (this.state.editedTodo.id !== "") {
             socket.emit('todo-edit-end', this.state.editedTodo.id)
         }
         this.setState({
-            editedTodo: {
-                name: "",
-                index: "",
-                id: "",
-                isComplete: false
-            },
-            createdTodo: {
-                name: "",
-            },
-            errors: {}
+            alertOpen: false
+        }, () => {
+            this.setState({
+                editedTodo: {
+                    name: "",
+                    index: "",
+                    id: "",
+                    isComplete: false
+                },
+                createdTodo: {
+                    name: "",
+                },
+                errors: {},
+                alertOpen: false
+            }, () => {
+                this.props.setTodos([])
+                this.props.closeTodoDialog()
+            })
         })
-        this.props.setTodos([])
-        this.props.closeTodoDialog()
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.todoList.todoListId === "")
             this.props.getTodos(this.props.todoList.todoListId);
     }
-
-    // componentWillReceiveProps(nextProps) {
-    //     this.setState({
-    //         errors: nextProps.error.errors,
-    //     })
-    // }
 
     onChangePanel = (id, name, index, isComplete) => (event, expanded) => {
         // To handle event when changing panels
@@ -188,7 +200,7 @@ class TodoDialog extends React.Component {
         this.setState({
             editedTodo: newEditedTodo
         }, () => this.props.editTodo(this.props.todoList.todoListId, this.state.editedTodo))
-        
+
     }
     onChangeEdit = name => e => {
         var newEditedTodo = { ...this.state.editedTodo }
@@ -254,7 +266,7 @@ class TodoDialog extends React.Component {
                             <CircularProgress className={classes.progress} />
                         </Grid>
                     ) : null}
-                    <Grid container justify="center">
+                    <Grid container justify="center" className={classes.todoContainer}>
                         <Grid item xs={12} sm={11} md={9}>
                             {todos.map(({ _id, name, isBeingEdited, isComplete }, index) => {
                                 return (
@@ -290,19 +302,6 @@ class TodoDialog extends React.Component {
                                                             margin="normal"
                                                         />
                                                     </Grid>
-                                                    {/* <Grid item xs={2}>
-                                                        <TextField
-                                                            fullWidth
-                                                            required
-                                                            type="number"
-                                                            helperText={errors.index}
-                                                            error={errors.index !== undefined}
-                                                            label="Index"
-                                                            value={this.state.editedTodo.index}
-                                                            onChange={this.onChangeEdit("index")}
-                                                            margin="normal"
-                                                        />
-                                                    </Grid> */}
                                                     <Grid item xs={4} md={3}>
                                                         <FormControl
                                                             margin="normal">
@@ -321,29 +320,31 @@ class TodoDialog extends React.Component {
                                                         </FormControl>
                                                     </Grid>
                                                     <Divider />
-                                                    <Grid item xs={6}>
+                                                    <Grid item>
                                                         <Grid container>
                                                             <Button
                                                                 variant="contained"
                                                                 color="default"
                                                                 className={classes.button}
+                                                                disabled={index === 0}
                                                                 onClick={() => this.onRearrange(index - 1)}
                                                             >
                                                                 Move Up
                                                                 <ArrowDropUpIcon className={classes.rightIcon} />
                                                             </Button>
-                                                            <IconButton
+                                                            <Button
                                                                 variant="contained"
                                                                 color="default"
                                                                 className={classes.button}
+                                                                disabled={index === todos.length - 1}
                                                                 onClick={() => this.onRearrange(index + 1)}
                                                             >
                                                                 Move Down
                                                                 <ArrowDropDownIcon className={classes.rightIcon} />
-                                                            </IconButton>
+                                                            </Button>
                                                         </Grid>
                                                     </Grid>
-                                                    <Grid item xs={6}>
+                                                    <Grid item>
                                                         <Grid container justify="flex-end">
                                                             <Button
                                                                 variant="contained"
@@ -354,15 +355,15 @@ class TodoDialog extends React.Component {
                                                                 Save
                                                                 <SaveIcon className={classes.rightIcon} />
                                                             </Button>
-                                                            <IconButton
+                                                            <Button
                                                                 variant="contained"
-                                                                color="default"
+                                                                color="secondary"
                                                                 className={classes.button}
                                                                 onClick={() => this.props.deleteTodo(todoListId, _id)}
                                                             >
                                                                 Delete
                                                                 <DeleteIcon className={classes.rightIcon} />
-                                                            </IconButton>
+                                                            </Button>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -415,15 +416,16 @@ class TodoDialog extends React.Component {
                 </Dialog>
                 <Dialog
                     open={this.state.alertOpen}
-                    onClose={this.closeAlert}
+                    onClose={this.handleClose}
                 >
+                    <DialogTitle>Todolist Deleted</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             This Todo List has been Deleted the Creator. You need to refresh the page
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.closeAlert} color="primary" autoFocus>
+                        <Button onClick={this.handleClose} color="primary" autoFocus>
                             Refresh
                         </Button>
                     </DialogActions>
@@ -436,7 +438,6 @@ class TodoDialog extends React.Component {
 TodoDialog.propTypes = {
     classes: PropTypes.object.isRequired,
     todo: PropTypes.object.isRequired,
-    // auth: PropTypes.object.isRequired,
     error: PropTypes.object.isRequired,
     editTodo: PropTypes.func.isRequired,
     createTodo: PropTypes.func.isRequired,

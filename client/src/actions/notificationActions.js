@@ -40,7 +40,7 @@ export const handleNotification = (notificationId, accept) => dispatch => {
                 type: REMOVE_NOTIFICATION,
                 payload: notificationId
             })
-            getTodoLists()
+            dispatch(getTodoLists())
         })
         .catch(err => dispatch(setErrors(err)))
 
