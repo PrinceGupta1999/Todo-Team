@@ -29,6 +29,7 @@ import {
     Button,
     FormControl,
     FormGroup,
+    FormHelperText,
     FormControlLabel,
     Switch,
     CircularProgress,
@@ -294,7 +295,7 @@ class TodoDialog extends React.Component {
                                                         <TextField
                                                             required
                                                             fullWidth
-                                                            helperText={errors.name}
+                                                            helperText={errors.name || "Name of Todo"}
                                                             error={errors.name !== undefined}
                                                             label="Name"
                                                             value={this.state.editedTodo.name}
@@ -317,6 +318,7 @@ class TodoDialog extends React.Component {
                                                                     label={this.state.editedTodo.isComplete ? 'Complete' : 'Incomplete'}
                                                                 />
                                                             </FormGroup>
+                                                            <FormHelperText>Status of Completion</FormHelperText>
                                                         </FormControl>
                                                     </Grid>
                                                     <Divider />
@@ -388,7 +390,7 @@ class TodoDialog extends React.Component {
                                                     <TextField
                                                         fullWidth
                                                         required
-                                                        helperText={errors.name}
+                                                        helperText={errors.name || "Name of Todo"}
                                                         error={errors.name !== undefined}
                                                         label="Name"
                                                         value={this.state.createdTodo.name}
@@ -449,7 +451,6 @@ TodoDialog.propTypes = {
 
 const mapStateToProps = state => ({
     todo: state.todo,
-    // auth: state.auth,
     error: state.error
 })
 

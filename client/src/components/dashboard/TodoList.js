@@ -49,6 +49,9 @@ const styles = theme => ({
     progress: {
         margin: theme.spacing.unit * 2,
     },
+    margin: {
+        marginTop: theme.spacing.unit * 3,
+    },
 });
 
 class TodoList extends Component {
@@ -208,7 +211,7 @@ class TodoList extends Component {
                                     <TextField
                                         fullWidth
                                         required
-                                        helperText={errors.name}
+                                        helperText={errors.name || "Name of Todolist"}
                                         error={errors.name !== undefined}
                                         label="Name"
                                         value={this.state.createdTodoList.name}
@@ -218,7 +221,7 @@ class TodoList extends Component {
                                     <TextField
                                         fullWidth
                                         required
-                                        helperText={errors.description}
+                                        helperText={errors.description || "Description of Todolist"}
                                         error={errors.description !== undefined}
                                         label="Description"
                                         value={this.state.createdTodoList.description}
@@ -229,6 +232,7 @@ class TodoList extends Component {
                                         fullWidth
                                         value={this.state.createdTodoList.edit}
                                         label="Editors"
+                                        helperText="Type email and press ENTER to add to list"
                                         onAdd={(chip) => this.addChip(chip, 'edit')}
                                         onDelete={(chip, index) => this.deleteChip(chip, index, 'edit')}
                                     />
@@ -236,7 +240,9 @@ class TodoList extends Component {
                                         fullWidth
                                         value={this.state.createdTodoList.view}
                                         label="Viewers"
+                                        helperText="Type email and press ENTER to add to list"
                                         onAdd={(chip) => this.addChip(chip, 'view')}
+                                        className={classes.margin}
                                         onDelete={(chip, index) => this.deleteChip(chip, index, 'view')}
                                     />
                                     <Divider />

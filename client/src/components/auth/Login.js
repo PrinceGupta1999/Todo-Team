@@ -72,42 +72,40 @@ class Login extends Component {
         const { errors } = this.state;
         const { classes, isSelected } = this.props;
         return (
-            <Grid item xs={11}>
-                <Paper className={classes.root} elevation={1}>
-                    <form noValidate onSubmit={this.onSubmit} autoComplete="off">
-                        <TextField
-                            fullWidth
-                            helperText={errors.email}
-                            required={isSelected}
-                            error={errors.email !== undefined}
-                            label="Email"
-                            value={this.state.email}
-                            onChange={this.onChange("email")}
-                            margin="normal"
-                        />
-                        <TextField
-                            fullWidth
-                            helperText={errors.password}
-                            required={isSelected}
-                            type="password"
-                            error={errors.password !== undefined}
-                            label="Password"
-                            value={this.state.password}
-                            onChange={this.onChange("password")}
-                            margin="normal"
-                        />
-                        <Grid container justify="flex-end">
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                className={classes.button}
-                            >Login
-                            </Button>
-                        </Grid>
-                    </form>
-                </Paper>
-            </Grid>
+            <Paper className={classes.root} elevation={1}>
+                <form noValidate onSubmit={this.onSubmit} autoComplete="off">
+                    <TextField
+                        fullWidth
+                        helperText={errors.email || "Enter your email"}
+                        required={isSelected}
+                        error={errors.email !== undefined}
+                        label="Email"
+                        value={this.state.email}
+                        onChange={this.onChange("email")}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        helperText={errors.password || "Enter your password"}
+                        required={isSelected}
+                        type="password"
+                        error={errors.password !== undefined}
+                        label="Password"
+                        value={this.state.password}
+                        onChange={this.onChange("password")}
+                        margin="normal"
+                    />
+                    <Grid container justify="flex-end">
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                        >Login
+                        </Button>
+                    </Grid>
+                </form>
+            </Paper>
         );
     }
 }

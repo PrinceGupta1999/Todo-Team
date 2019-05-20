@@ -77,63 +77,61 @@ class Register extends Component {
         const { errors } = this.state;
         const { classes, isSelected } = this.props;
         return (
-            <Grid item xs={11}>
-                <Paper className={classes.root} elevation={1}>
-                    <form noValidate onSubmit={this.onSubmit} autoComplete="off">
-                        <TextField
-                            fullWidth
-                            required={isSelected}
-                            error={errors.name !== undefined}
-                            helperText={errors.name}
-                            label="Name"
-                            value={this.state.name}
-                            onChange={this.onChange("name")}
-                            margin="normal"
-                        />
-                        <TextField
-                            fullWidth
-                            required={isSelected}
-                            error={errors.email !== undefined}
-                            helperText={errors.email}
-                            label="Email"
-                            value={this.state.email}
-                            onChange={this.onChange("email")}
-                            margin="normal"
-                        />
-                        <TextField
-                            fullWidth
-                            required={isSelected}
-                            type="password"
-                            error={errors.password !== undefined}
-                            helperText={errors.password}
-                            label="Password"
-                            value={this.state.password}
-                            onChange={this.onChange("password")}
-                            margin="normal"
-                        />
-                        <TextField
-                            fullWidth
-                            required={isSelected}
-                            type="password"
-                            error={errors.password2 !== undefined || this.state.password !== this.state.password2}
-                            helperText={errors.password2}
-                            label="Confirm Password"
-                            value={this.state.password2}
-                            onChange={this.onChange("password2")}
-                            margin="normal"
-                        />
-                        <Grid container justify="flex-end">
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                className={classes.button}
-                            >Register
-                            </Button>
-                        </Grid>
-                    </form>
-                </Paper>
-            </Grid>
+            <Paper className={classes.root} elevation={1}>
+                <form noValidate onSubmit={this.onSubmit} autoComplete="off">
+                    <TextField
+                        fullWidth
+                        required={isSelected}
+                        error={errors.name !== undefined}
+                        helperText={errors.name || "Enter your name"}
+                        label="Name"
+                        value={this.state.name}
+                        onChange={this.onChange("name")}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        required={isSelected}
+                        error={errors.email !== undefined}
+                        helperText={errors.email || "Enter your email"}
+                        label="Email"
+                        value={this.state.email}
+                        onChange={this.onChange("email")}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        required={isSelected}
+                        type="password"
+                        error={errors.password !== undefined}
+                        helperText={errors.password || "Enter the password"}
+                        label="Password"
+                        value={this.state.password}
+                        onChange={this.onChange("password")}
+                        margin="normal"
+                    />
+                    <TextField
+                        fullWidth
+                        required={isSelected}
+                        type="password"
+                        error={errors.password2 !== undefined || this.state.password !== this.state.password2}
+                        helperText={errors.password2 || "Confirm password"}
+                        label="Confirm Password"
+                        value={this.state.password2}
+                        onChange={this.onChange("password2")}
+                        margin="normal"
+                    />
+                    <Grid container justify="flex-end">
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.button}
+                        >Register
+                        </Button>
+                    </Grid>
+                </form>
+            </Paper>
         );
     }
 }

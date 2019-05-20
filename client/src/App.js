@@ -9,14 +9,20 @@ import store from "./store";
 
 import socketIOClient from 'socket.io-client';
 
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
-
 import Landing from "./components/layout/Landing";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { blue, red } from "@material-ui/core/colors";
+
+
 var socket;
 const theme = createMuiTheme({
+    palette: {
+        primary: blue,
+        secondary: red,
+    },
     typography: {
         useNextVariants: true
     }

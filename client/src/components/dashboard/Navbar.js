@@ -17,6 +17,8 @@ import {
 } from '@material-ui/core';
 import deepOrange from "@material-ui/core/colors/deepOrange"
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import PowerSettingNewIcon from '@material-ui/icons/PowerSettingsNew';
 
 
 const styles = theme => ({
@@ -95,8 +97,9 @@ class Navbar extends React.Component {
                             anchorEl={accountAnchor}
                             open={Boolean(accountAnchor)}
                             onClose={this.handleClose('account')}>
-                            <MenuItem onClick={this.handleClose('account')}>Hi! {userName}</MenuItem>
-                            <MenuItem onClick={this.props.logoutUser}>Logout</MenuItem>
+                            <MenuItem onClick={this.handleClose('account')}><AccountCircle fontSize="small" /> Hi {userName.split(
+                                " ")[0]}</MenuItem>
+                            <MenuItem onClick={this.props.logoutUser}><PowerSettingNewIcon fontSize="small" />Logout</MenuItem>
                         </Menu>
                         <NotificationsDialog closeNotificationDialog={this.closeNotificationDialog} notificationDialogOpen={this.state.notificationDialogOpen} />
                     </Toolbar>
