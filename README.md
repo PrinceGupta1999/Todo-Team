@@ -3,35 +3,7 @@
 
   
 
-**This github repository represents the submission by Prince Gupta for NSUT Web Team shortlisting task**. Todo Team is a To'do management MERN Stack based web-app that allows users to create and manage their To'do’s in a collaborative fashion allowing them to create multiple To'do Lists and inviting other users to edit or view the same
-
-## Demo Screenshots
-
-***Home Page***
-
-![demo1](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/home.png)
-
-  
-  
-
-***Dashboard***
-
-![demo2](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/dashboard.png)
-
-  
-  
-
-***Create and View To'dos***
-
-![demo3](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/todo.png)
-
-  
-  
-
-***Accept/Decline Notification***
-
-![demo4](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/notification.png)
-
+**This github repository represents the submission by Prince Gupta for NSUT Web Team shortlisting task**. The WebApp is also hosted on https://aqueous-caverns-72878.herokuapp.com. Todo Team is a To'do management MERN Stack based web-app that allows users to create and manage their To'do’s in a collaborative fashion allowing them to create multiple To'do Lists and inviting other users to edit or view the same
   
 ## Installation
 
@@ -76,9 +48,9 @@ npm install && npm run client-install && npm install -g nodemon
 
 ```
  * Change Configuration Files: Edit following files
- 1. config/default.json: Change ***secretOrKey*** and ***mongoURI***
- 2. client/package.json: change **proxy**
- 3. client/App.js: Change ***socketIOClient()*** call
+    1. config/default.json: Change ***secretOrKey*** and ***mongoURI***
+    2. client/package.json: change **proxy**
+    3. client/App.js: Change ***socketIOClient()*** call
 
 * Initiate the Application
 ```bash
@@ -91,17 +63,6 @@ npm run dev
 
   
 
-### Technology Stack
-
-* NodeJS
-
-* ExpressJS
-
-* ReactJs
-
-* MongoDB
-
-* Material-UI  
 
 ## Features
 
@@ -116,3 +77,46 @@ Uses Socket.IO library for broadcasting Real-Time Database operations results to
 #### Material-UI
 
 Employs Material-UI framework for providing consistent and responsive  front-end experience
+
+## Demo Screenshots
+
+***Home Page***
+
+![demo1](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/home.png)
+
+  
+  
+
+***Dashboard***
+
+![demo2](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/dashboard.png)
+
+  
+  
+
+***Create and View To'dos***
+
+![demo3](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/todo.png)
+
+  
+  
+
+***Accept/Decline Notification***
+
+![demo4](https://github.com/PrinceGupta1999/Todo-Team/blob/master/screenshots/notification.png)
+
+
+
+### Technology Stack
+
+* NodeJS
+
+* ExpressJS
+
+* ReactJs
+
+* MongoDB
+
+* Material-UI  
+
+
