@@ -50,7 +50,8 @@ const styles = theme => ({
         margin: theme.spacing.unit * 2,
     },
     margin: {
-        marginTop: theme.spacing.unit * 3,
+        marginTop: theme.spacing.unit * 2,
+        marginBottom: theme.spacing.unit,
     },
 });
 
@@ -234,6 +235,7 @@ class TodoList extends Component {
                                         label="Editors"
                                         helperText="Type email and press ENTER to add to list"
                                         onAdd={(chip) => this.addChip(chip, 'edit')}
+                                        className={classes.margin}
                                         onDelete={(chip, index) => this.deleteChip(chip, index, 'edit')}
                                     />
                                     <ChipInput
