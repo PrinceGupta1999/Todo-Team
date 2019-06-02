@@ -247,8 +247,7 @@ class TodoList extends Component {
                                         className={classes.margin}
                                         onDelete={(chip, index) => this.deleteChip(chip, index, 'view')}
                                     />
-                                    <Divider className={classes.margin} />
-                                    <Grid container justify="flex-end">
+                                    <Grid container justify="flex-end" className={classes.margin}>
                                         <Button
                                             size="large"
                                             type="submit"
