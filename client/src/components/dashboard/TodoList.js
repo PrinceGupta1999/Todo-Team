@@ -18,7 +18,6 @@ import {
     TextField,
     Grid,
     Button,
-    Divider,
     CircularProgress
 } from '@material-ui/core';
 import DeleteIcon from "@material-ui/icons/Delete";
