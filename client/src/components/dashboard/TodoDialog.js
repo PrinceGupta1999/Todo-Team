@@ -134,7 +134,6 @@ class TodoDialog extends React.Component {
 
     // Fired on Closing The Dialog
     handleClose = () => {
-        console.log('Here')
         if (this.state.editedTodo.id !== "") {
             socket.emit('todo-edit-end', this.state.editedTodo.id)
         }

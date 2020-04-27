@@ -1,7 +1,7 @@
 
 # Todo Team
 
-The WebApp is also hosted on https://aqueous-caverns-72878.herokuapp.com. Todo Team is a To'do management MERN Stack based web-app that allows users to create and manage their To'do’s in a collaborative fashion allowing them to create multiple To'do Lists and inviting other users to edit or view the same
+The WebApp is also hosted on <https://todo-team-app.herokuapp.com/.> Todo Team is a To'do management MERN Stack based web-app that allows users to create and manage their To'do’s in a collaborative fashion allowing them to create multiple To'do Lists and inviting other users to edit or view the same
   
 ## Installation
 
