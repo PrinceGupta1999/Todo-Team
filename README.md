@@ -42,7 +42,7 @@ npm install && npm run client-install && npm install -g nodemon
 ```
 
 * Change Configuration Files: Edit following files
-    1. config/default.json: Change ***secretOrKey*** and ***mongoURI***
+    1. config/default.json: Create file with ***secretOrKey*** and ***mongoURI*** properties
     2. client/package.json: change **proxy**
     3. client/App.js: Change ***socketIOClient()*** call
 
